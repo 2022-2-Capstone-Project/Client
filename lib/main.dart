@@ -16,6 +16,7 @@ import 'package:capstone/senior/makethemepage.dart';
 import 'package:capstone/senior/sraccount.dart';
 import 'package:capstone/senior/themedetailspage.dart';
 import 'package:capstone/senior/themeswrote.dart';
+import 'package:capstone/senior/tourgoingon.dart';
 import 'package:capstone/senior/tourwrote.dart';
 import 'package:capstone/signuppage.dart';
 import 'package:capstone/srorjrpage.dart';

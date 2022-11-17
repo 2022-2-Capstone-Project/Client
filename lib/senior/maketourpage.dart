@@ -48,7 +48,7 @@ class _MakeTourPageState extends State<MakeTourPage> {
               left: 0.0,
               right: 0.0,
               child: AppBar(
-                title: Text('테마 만들기',
+                title: Text('투어 만들기',
                     style: TextStyle(
                         color: Color.fromARGB(255, 14, 99, 246),
                         fontWeight: FontWeight.bold,

@@ -1,3 +1,5 @@
+import 'package:capstone/senior/makethemepage.dart';
+import 'package:capstone/senior/maketourpage.dart';
 import 'package:flutter/material.dart';
 
 class ThemeDetails extends StatefulWidget {
@@ -98,9 +100,19 @@ class _ThemeDetailsState extends State<ThemeDetails> {
               child: Container(
                 alignment: Alignment.center,
                 color: Color.fromARGB(255, 14, 99, 246),
-                child: Text("투어 만들기",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MakeTourPage(),
+                      ),
+                    );
+                  },
+                  child: Text("투어 만들기",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                ),
               ),
             ),
           ],

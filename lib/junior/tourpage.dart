@@ -34,7 +34,7 @@ class _TourPageState extends State<TourPage> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+            margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
             height: 150,
             padding: const EdgeInsets.all(5.0),
             decoration: BoxDecoration(
@@ -52,8 +52,10 @@ class _TourPageState extends State<TourPage> {
             child: Row(
               children: <Widget>[
                 CircleAvatar(
-                  radius: 40,
+                  radius: 35,
                   backgroundColor: Colors.blue,
+                  child: Text('CAU',
+                      style: TextStyle(color: Colors.white, fontSize: 20)),
                 ),
                 SingleChildScrollView(
                   child: GestureDetector(
@@ -71,7 +73,7 @@ class _TourPageState extends State<TourPage> {
                         new Text('-학교-',
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 16)),
-                        new Text('정문에서 후문까지 편하게 가는 법!',
+                        new Text(' 정문에서 후문까지 편하게 가는 법!',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold)),
