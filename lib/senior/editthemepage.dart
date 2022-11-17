@@ -203,6 +203,7 @@ class _EditThemePageState extends State<EditThemePage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "add people",
                       child: Icon(Icons.add),
                       onPressed: () {
                         increment();
@@ -220,6 +221,7 @@ class _EditThemePageState extends State<EditThemePage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "remove people theme",
                       child: Icon(Icons.remove),
                       onPressed: () {
                         decrement();

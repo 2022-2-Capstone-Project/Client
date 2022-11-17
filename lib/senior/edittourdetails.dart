@@ -196,6 +196,7 @@ class _EditTourPageState extends State<EditTourPage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "edit people",
                       child: Icon(Icons.add),
                       onPressed: () {
                         increment();
@@ -213,6 +214,7 @@ class _EditTourPageState extends State<EditTourPage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "remove people tour",
                       child: Icon(Icons.remove),
                       onPressed: () {
                         decrement();

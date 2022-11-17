@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'package:capstone/junior/nav_bar_junior.dart';
+import 'package:capstone/senior/navigation_bar.dart';
 import 'package:capstone/senior/themeswrote.dart';
 import 'package:capstone/senior/tourwrote.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+import 'package:http/http.dart' as http;
 
 class SeniorAccountPage extends StatefulWidget {
   const SeniorAccountPage({Key? key}) : super(key: key);
@@ -10,6 +15,21 @@ class SeniorAccountPage extends StatefulWidget {
 }
 
 class _SeniorAccountPageState extends State<SeniorAccountPage> {
+  Future userApi() async {
+    http.Response response;
+    response = await http.get(Uri.parse("http://127.0.0.1:8000/user/"));
+    if (response.statusCode == 200) {
+      setState(() {
+        json.decode(response.body);
+      });
+    }
+  }
+
+  void initState() {
+    userApi();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +60,7 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                           radius: 35),
                     ),
                     SizedBox(height: 10),
-                    Text('Syaffa',
+                    Text('syaffa',
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,

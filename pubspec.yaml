@@ -39,7 +39,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^3.0.1
   curved_navigation_bar: ^1.0.3
-  image_picker:
+  image_picker: ^0.8.6
   flutter_slidable: ^1.2.0
   get: ^4.1.4
   geolocator: ^7.1.0
@@ -50,13 +50,15 @@ dependencies:
   flutter_google_places: ^0.3.0
   google_maps_place_picker: ^2.1.0-nullsafety.3
   scroll_date_picker: ^3.6.0
+  shared_preferences: ^2.0.15
+  mime: ^1.0.2
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   http: any
-  shared_preferences: any
+  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

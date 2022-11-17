@@ -1,5 +1,6 @@
 import 'package:capstone/signuppage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 
 class SrorJrPage extends StatefulWidget {
   const SrorJrPage({Key? key}) : super(key: key);
@@ -56,6 +57,7 @@ class _SrorJrPageState extends State<SrorJrPage> {
                       );
                     },
                     child: Text('선배 회원',
+                        key: ValueKey(1),
                         style: TextStyle(
                             color: Color.fromARGB(255, 14, 99, 246),
                             fontWeight: FontWeight.bold,
@@ -82,6 +84,7 @@ class _SrorJrPageState extends State<SrorJrPage> {
                       );
                     },
                     child: Text('후배 회원',
+                        key: ValueKey(2),
                         style: TextStyle(
                             color: Color.fromARGB(255, 14, 99, 246),
                             fontWeight: FontWeight.bold,

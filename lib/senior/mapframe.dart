@@ -29,8 +29,8 @@ class _MapFrameState extends State<MapFrame> {
     return GetBuilder<LocationController>(builder: (LocationController) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Maps Sample App'),
-          backgroundColor: Colors.green,
+          title: const Text('위치 선택'),
+          backgroundColor: Color.fromARGB(255, 14, 99, 246),
         ),
         body: Stack(
           children: [

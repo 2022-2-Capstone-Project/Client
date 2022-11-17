@@ -1,9 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:capstone/senior/input_file.dart';
 import 'package:capstone/senior/mapframe.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/src/material/dropdown.dart';
+import 'package:mime/mime.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'location_search.dart';
 import 'location_controller.dart';
 import 'package:scroll_date_picker/scroll_date_picker.dart';
+import 'package:http/http.dart' as http;
 
 class MakeThemePage extends StatefulWidget {
   const MakeThemePage({Key? key}) : super(key: key);
@@ -13,8 +21,8 @@ class MakeThemePage extends StatefulWidget {
 }
 
 class _MakeThemePageState extends State<MakeThemePage> {
-  final items = ['Cat 1', 'Cat 2', 'Cat 3', 'Cat 4'];
-  String? selectedItem;
+  List<String> items = ['학교', '맛집', '공부'];
+  String? selectedItem = "학교";
 
   static final LatLng _kMapCenter = LatLng(37.532600, 127.024612);
 
@@ -36,6 +44,40 @@ class _MakeThemePageState extends State<MakeThemePage> {
   }
 
   DateTime _selectedDate = DateTime.now();
+
+  File? _image;
+  PickedFile? _pickedFile;
+  final _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    _pickedFile = await _picker.getImage(source: ImageSource.gallery);
+    if (_pickedFile != null) {
+      setState(() {
+        _image = File(_pickedFile!.path);
+      });
+    }
+  }
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _participantController = TextEditingController();
+  final TextEditingController _placeController = TextEditingController();
+
+  void makeTheme(String username, password) async {
+    var data = {};
+    http
+        .post(
+          Uri.parse("http://127.0.0.1:8000/tour-theme/"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            'username': username,
+            'password': password,
+          }),
+        )
+        .then((response) => print(response.body))
+        .catchError((error) => print(error));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +106,10 @@ class _MakeThemePageState extends State<MakeThemePage> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: GestureDetector(
+                onTap: (() => _pickImage()),
                 child: Icon(
                   Icons.add_a_photo_outlined,
                   size: 50,
@@ -75,7 +117,18 @@ class _MakeThemePageState extends State<MakeThemePage> {
               ),
             ),
             SizedBox(height: 25),
-            Text('사진 업로드', style: TextStyle(fontWeight: FontWeight.bold)),
+            Container(
+              alignment: Alignment.center,
+              child: _pickedFile != null
+                  ? Image.file(
+                      File(_pickedFile!.path),
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    )
+                  : const Text('사진 선택하세요',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
             SizedBox(
               height: 25,
             ),
@@ -90,6 +143,7 @@ class _MakeThemePageState extends State<MakeThemePage> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: TextField(
+                    controller: _titleController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: '제목',
@@ -98,9 +152,11 @@ class _MakeThemePageState extends State<MakeThemePage> {
                 ),
               ),
             ),
+
             SizedBox(
               height: 25,
             ),
+            //category
             Container(
               width: 340,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
@@ -124,6 +180,7 @@ class _MakeThemePageState extends State<MakeThemePage> {
                 ),
               ),
             ),
+
             SizedBox(
               height: 25,
             ),
@@ -203,6 +260,7 @@ class _MakeThemePageState extends State<MakeThemePage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "add people for make theme",
                       child: Icon(Icons.add),
                       onPressed: () {
                         increment();
@@ -220,6 +278,7 @@ class _MakeThemePageState extends State<MakeThemePage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "remove people for make theme",
                       child: Icon(Icons.remove),
                       onPressed: () {
                         decrement();
@@ -237,30 +296,6 @@ class _MakeThemePageState extends State<MakeThemePage> {
               height: 30,
             ),
 
-            //time
-            Column(
-              children: [
-                Text(
-                  '날짜과 시간 선택해주세요: ',
-                  style: TextStyle(
-                      fontSize: 20, color: Color.fromARGB(255, 14, 99, 246)),
-                ),
-                SizedBox(
-                  height: 250,
-                  child: ScrollDatePicker(
-                    selectedDate: _selectedDate,
-                    locale: Locale('en'),
-                    onDateTimeChanged: (DateTime value) {
-                      setState(() {
-                        _selectedDate = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 20),
             //make theme button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),

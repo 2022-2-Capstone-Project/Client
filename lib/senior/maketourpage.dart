@@ -195,6 +195,7 @@ class _MakeTourPageState extends State<MakeTourPage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "add people for make tour",
                       child: Icon(Icons.add),
                       onPressed: () {
                         increment();
@@ -212,6 +213,7 @@ class _MakeTourPageState extends State<MakeTourPage> {
                     width: 30,
                     height: 30,
                     child: FloatingActionButton(
+                      heroTag: "remove people for make tour",
                       child: Icon(Icons.remove),
                       onPressed: () {
                         decrement();
