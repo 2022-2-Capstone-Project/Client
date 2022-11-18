@@ -1,3 +1,4 @@
+import 'package:capstone/junior/confirmregpage.dart';
 import 'package:flutter/material.dart';
 
 class TourDetails extends StatefulWidget {
@@ -128,9 +129,19 @@ class _TourDetailsState extends State<TourDetails> {
               child: Container(
                 alignment: Alignment.center,
                 color: Colors.blueAccent,
-                child: Text("신청하기",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConfirmRegPage(),
+                      ),
+                    );
+                  },
+                  child: Text("신청하기",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                ),
               ),
             ),
           ],

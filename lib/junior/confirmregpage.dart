@@ -1,3 +1,4 @@
+import 'package:capstone/junior/nav_bar_junior.dart';
 import 'package:capstone/junior/tourpage.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class _ConfirmRegPageState extends State<ConfirmRegPage> {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: 150),
+            SizedBox(height: 130),
             Text('신청 완료',
                 style: TextStyle(
                     fontSize: 40,
@@ -31,7 +32,7 @@ class _ConfirmRegPageState extends State<ConfirmRegPage> {
 
             //기본 정보 (to be updated)
 
-            SizedBox(height: 230),
+            SizedBox(height: 100),
 
             //button for 확인 & 채팅
             Padding(
@@ -74,7 +75,7 @@ class _ConfirmRegPageState extends State<ConfirmRegPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TourPage(),
+                                builder: (context) => NavBarJr(),
                               ),
                             );
                           },
