@@ -57,7 +57,6 @@ class _SrorJrPageState extends State<SrorJrPage> {
                       );
                     },
                     child: Text('선배 회원',
-                        key: ValueKey(1),
                         style: TextStyle(
                             color: Color.fromARGB(255, 14, 99, 246),
                             fontWeight: FontWeight.bold,
@@ -84,7 +83,6 @@ class _SrorJrPageState extends State<SrorJrPage> {
                       );
                     },
                     child: Text('후배 회원',
-                        key: ValueKey(2),
                         style: TextStyle(
                             color: Color.fromARGB(255, 14, 99, 246),
                             fontWeight: FontWeight.bold,

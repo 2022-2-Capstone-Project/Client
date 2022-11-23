@@ -1,11 +1,13 @@
 import 'package:capstone/junior/nav_bar_junior.dart';
 import 'package:capstone/junior/tourpage.dart';
+import 'package:capstone/log_in.dart';
 import 'package:capstone/senior/homepage.dart';
 import 'package:capstone/senior/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'srorjrpage.dart';
 import 'dart:convert';
 
@@ -13,13 +15,13 @@ class SignUp {
   final String username;
   final String password;
   final String nickname;
-  final String studentid;
+  final String usertype;
 
   SignUp({
     required this.username,
     required this.password,
     required this.nickname,
-    required this.studentid,
+    required this.usertype,
   });
 
   factory SignUp.fromJson(Map<String, dynamic> json) {
@@ -27,7 +29,7 @@ class SignUp {
       username: json['username'],
       password: json['password'],
       nickname: json['nickname'],
-      studentid: json['studentid'],
+      usertype: json['user_type'],
     );
   }
 }
@@ -42,8 +44,10 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nicknameController = TextEditingController();
+  final TextEditingController _usertypeController = TextEditingController();
 
-  void createAccount(String username, password) {
+  void createAccount(String username, password, nickname, usertype) {
     var data = {};
     http
         .post(
@@ -54,16 +58,15 @@ class _SignUpPageState extends State<SignUpPage> {
       body: jsonEncode(<String, String>{
         'username': username,
         'password': password,
+        'nickname': nickname,
+        'user_type': usertype,
       }),
     )
         .then((response) {
-      if (response.statusCode == 200) {
-        if (ValueKey == 1) {
-          Get.to(NavBar());
-        } else {
-          Get.to(NavBarJr());
-        }
-      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LogInPage()),
+      );
     }).catchError((error) => print(error));
   }
 
@@ -149,6 +152,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: TextField(
+                      controller: _nicknameController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Nickname',
@@ -169,9 +173,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10.0),
                     child: TextField(
+                      controller: _usertypeController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Student ID',
+                        hintText: 'User Type',
                       ),
                     ),
                   ),
@@ -187,10 +192,13 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: BorderRadius.circular(12)),
                     child: Center(
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           setState(() {
-                            createAccount(_usernameController.text,
-                                _passwordController.text);
+                            createAccount(
+                                _usernameController.text,
+                                _passwordController.text,
+                                _nicknameController.text,
+                                _usertypeController.text);
                           });
                         },
                         child: Text('가입',

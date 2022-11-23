@@ -41,7 +41,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       // ignore: prefer_const_constructors
-      home: NavBarJr(),
+      home: LogInPage(),
+      //home: LogInPage(),
     );
   }
 }

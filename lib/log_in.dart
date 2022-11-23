@@ -1,5 +1,6 @@
 import 'package:capstone/junior/nav_bar_junior.dart';
 import 'package:capstone/senior/navigation_bar.dart';
+import 'package:capstone/signuppage.dart';
 import 'package:capstone/srorjrpage.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:async/async.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:capstone/signuppage.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 
 Future<bool> setToken(String value) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -31,29 +34,41 @@ class _LogInPageState extends State<LogInPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   void auth(String username, password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = await getToken();
+    var accesstoken = "";
     var data = {};
     http
         .post(
-      Uri.parse("http://127.0.0.1:8000/token/"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(<String, String>{
-        'username': username,
-        'password': password,
-      }),
-    )
-        .then((response) {
-      if (response.statusCode == 200) {
-        if (ValueKey == 1) {
-          Get.to(NavBarJr());
-        } else {
-          Get.to(NavBar());
-        }
-      }
-    }).catchError((error) => print(error));
+          Uri.parse("http://127.0.0.1:8000/token/"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(<String, String>{
+            'username': username,
+            'password': password,
+          }),
+        )
+        .then((response) => json.decode(response.body)["access"])
+        .then((accesstoken) => Jwt.parseJwt(accesstoken))
+        .then((data) => {
+              if (data["user_type"] == "Senior")
+                {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NavBar()),
+                  )
+                }
+              else if (data["user_type"] == "Junior")
+                {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NavBarJr()),
+                  )
+                }
+            })
+        .catchError((error) => print(error));
   }
 
   @override
@@ -165,7 +180,7 @@ class _LogInPageState extends State<LogInPage> {
                 GestureDetector(
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SrorJrPage()));
+                        MaterialPageRoute(builder: (context) => SignUpPage()));
                   },
                   child: Text(' 회원 가입',
                       style: TextStyle(
