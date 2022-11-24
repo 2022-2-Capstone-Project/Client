@@ -38,37 +38,55 @@ class _LogInPageState extends State<LogInPage> {
     var token = await getToken();
     var accesstoken = "";
     var data = {};
-    http
-        .post(
-          Uri.parse("http://127.0.0.1:8000/token/"),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer $token',
-          },
-          body: jsonEncode(<String, String>{
-            'username': username,
-            'password': password,
-          }),
-        )
-        .then((response) => json.decode(response.body)["access"])
-        .then((accesstoken) => Jwt.parseJwt(accesstoken))
-        .then((data) => {
-              if (data["user_type"] == "Senior")
-                {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => NavBar()),
-                  )
-                }
-              else if (data["user_type"] == "Junior")
-                {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => NavBarJr()),
-                  )
-                }
-            })
-        .catchError((error) => print(error));
+    try {
+      final response = await http.post(
+        Uri.parse("http://172.20.10.2:8080/token/"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, String>{
+          'username': username,
+          'password': password,
+        }),
+      );
+
+      final accessToken = json.decode(response.body)["access"];
+      final dataMap = Jwt.parseJwt(accessToken);
+      print("dataMap: $dataMap");
+      if (dataMap["user_type"] == "Senior") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NavBar()),
+        );
+      } else if (dataMap["user_type"] == "Junior") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NavBarJr()),
+        );
+      }
+    } on Exception catch (error) {
+      print(error);
+    }
+
+    /*.then((response) => json
+                .decode(response.body)["access"]
+                .then((accesstoken) => Jwt.parseJwt(accesstoken))
+                .then((data) {
+              if (data["user_type"] == "Senior") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NavBar()),
+                );
+              } else if (data["user_type"] == "Junior") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NavBarJr()),
+                );
+              }
+            }).catchError((error) {
+              print(error);
+            }));*/
   }
 
   @override
