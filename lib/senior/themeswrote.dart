@@ -1,3 +1,4 @@
+import 'package:capstone/senior/editthemepage.dart';
 import 'package:capstone/senior/edittourdetails.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _ThemesWrotePageState extends State<ThemesWrotePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditTourPage(),
+                    builder: (context) => EditThemePage(),
                   ),
                 );
               }),

@@ -1,36 +1,51 @@
 class ThemeModel {
+  String? created;
   String? thumbnail;
   String? title;
-  String? category;
   int? participants;
   dynamic lat;
   dynamic long;
-  int estimated;
+  int? estimated;
   String startPlace;
   String? description;
+  String? author;
+  String? nickname;
+  String? rating;
+  String? followers;
+  String? url;
+  String? category;
 
   ThemeModel(
       {this.lat,
+      this.url,
       this.long,
-      this.category,
+      this.created,
       this.participants = 0,
       this.thumbnail,
       required this.estimated,
       required this.startPlace,
       required this.description,
-      this.title});
+      this.author,
+      this.nickname,
+      this.title,
+      required this.category});
 
   factory ThemeModel.fromJson(Map<String, dynamic> json) {
     return ThemeModel(
-        lat: json["latitude"],
-        long: json["longitude"],
-        thumbnail: json["thumbnail"],
-        title: json["title"],
-        participants: json['participants'],
-        estimated: json["estimated"],
-        startPlace: json['start_place'] ?? "",
-        category: json["category"],
-        description: json["description"] ?? "");
+      category: json["category"] ?? "",
+      url: json["url"],
+      lat: json["latitude"],
+      long: json["longitude"],
+      thumbnail: json["thumbnail"],
+      title: json["title"],
+      participants: json['participants'],
+      estimated: json["estimated"],
+      startPlace: json['start_place'] ?? "",
+      description: json["description"] ?? "",
+      author: json['author'] ?? "", //"http://172.30.1.45:8080/sign-up/3/
+      created: json['created'],
+      nickname: json['nickname'],
+    );
   }
 
   Map<String, String> toJson() {
@@ -39,11 +54,15 @@ class ThemeModel {
       "longitude": long.toString(),
       "thumbnail": thumbnail ?? "",
       "title": title ?? "",
-      "category": category ?? "",
       "participants": participants.toString(),
       "start_place": startPlace,
       "description": description ?? "",
-      "estimated": estimated.toString()
+      "created": created ?? "",
+      "author": author ?? "",
+      "estimated": estimated.toString(),
+      "nickname": nickname.toString(),
+      "url": url ?? "",
+      "category": category ?? ""
     };
   }
 }
@@ -62,3 +81,17 @@ class ThemeModel {
     "description": "hello",
     "author": null
 */
+class Author {
+  String username;
+  String nickname;
+
+  Author({required this.username, required this.nickname});
+
+  factory Author.fromJson(Map<String, dynamic> json) {
+    return Author(username: json["username"], nickname: json['nickname']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {"username": username, "nickname": nickname};
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:capstone/api_manager.dart';
 import 'package:capstone/junior/nav_bar_junior.dart';
 import 'package:capstone/junior/tourpage.dart';
 import 'package:capstone/log_in.dart';
@@ -51,7 +52,7 @@ class _SignUpPageState extends State<SignUpPage> {
     var data = {};
     http
         .post(
-      Uri.parse("http://127.0.0.1:8000/sign-up/"),
+      Uri.parse("${ApiManager.BASE_URL}/sign-up/"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

@@ -1,8 +1,15 @@
+import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/makethemepage.dart';
 import 'package:capstone/senior/maketourpage.dart';
 import 'package:flutter/material.dart';
 
+import '../theme_model.dart';
+
 class ThemeDetails extends StatefulWidget {
+  late ThemeModel themeModel;
+
+  ThemeDetails(this.themeModel);
+
   @override
   _ThemeDetailsState createState() => _ThemeDetailsState();
 }
@@ -10,7 +17,10 @@ class ThemeDetails extends StatefulWidget {
 class _ThemeDetailsState extends State<ThemeDetails> {
   @override
   Widget build(BuildContext context) {
+    ThemeModel model = widget.themeModel;
+
     Size size = MediaQuery.of(context).size;
+    final thumbnail = model.thumbnail;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -38,10 +48,37 @@ class _ThemeDetailsState extends State<ThemeDetails> {
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(20),
               child: Container(
-                  child: Center(
-                      child: Text("학교",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold))),
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 10,
+                        ),
+                        CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: Text('S'),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          children: [
+                            Text("${model.author}"),
+                            Text("${model.followers} followers"),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 100,
+                        ),
+                        Column(
+                          children: [
+                            Text("${model.rating}"),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
                   width: double.maxFinite,
                   padding: EdgeInsets.only(top: 5, bottom: 10),
                   decoration: BoxDecoration(
@@ -56,68 +93,100 @@ class _ThemeDetailsState extends State<ThemeDetails> {
             backgroundColor: Color.fromARGB(255, 14, 99, 246),
             expandedHeight: 300,
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                "/Users/syaffa255/StudioProjects/capstoneproject/lib/cau.jpeg",
-                width: double.maxFinite,
-                fit: BoxFit.cover,
-              ),
+              background: thumbnail == null
+                  ? Container(
+                      width: double.maxFinite,
+                      height: double.maxFinite,
+                      child: const Icon(Icons.image),
+                    )
+                  : Image.network(
+                      thumbnail,
+                      width: double.maxFinite,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
           SliverToBoxAdapter(
               child: Text(
-            '학교에 대해 잘 알고 계시고 다른 학생들에게 알려주고 싶으면 이 학교 투어를 만들어 보세요~! 투어 시키면서 새로운 친구들과 친해질 수 있는 기회 놓치지 마세요! 나만의 알고 있는 정보들도 다른 학생들에게 공유해보세요',
+            '${model.title}',
             textAlign: TextAlign.center,
-            style: TextStyle(height: 3),
+            style: TextStyle(height: 3, fontSize: 20),
           )),
           SliverToBoxAdapter(
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                      '/Users/syaffa255/StudioProjects/capstoneproject/lib/caumap.png'),
-                  fit: BoxFit.fill,
-                ),
-                shape: BoxShape.rectangle,
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                '${model.created}',
+                textAlign: TextAlign.center,
+                style: TextStyle(height: 3),
               ),
-            ),
-          ),
+              Text(
+                '${model.estimated}',
+                textAlign: TextAlign.center,
+                style: TextStyle(height: 3),
+              ),
+              Text(
+                '${model.participants}',
+                textAlign: TextAlign.center,
+                style: TextStyle(height: 3),
+              ),
+            ],
+          )),
+          SliverToBoxAdapter(
+              child: Column(
+            children: [
+              Text("설명:"),
+              Text(
+                model.description ?? "",
+                textAlign: TextAlign.center,
+                style: TextStyle(height: 3),
+              ),
+            ],
+          )),
+
+          // start place (map showing the lat and long of the place)
         ],
       ),
-      bottomNavigationBar: Container(
-        height: 56,
-        margin: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: 66,
-              color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[Icon(Icons.bookmark, color: Colors.black)],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                alignment: Alignment.center,
-                color: Color.fromARGB(255, 14, 99, 246),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MakeTourPage(),
+      bottomNavigationBar: LocationController.get.userId == null
+          ? null
+          : Container(
+              height: 56,
+              margin: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 66,
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Icon(Icons.bookmark, color: Colors.black)
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Color.fromARGB(255, 14, 99, 246),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MakeTourPage(),
+                            ),
+                          );
+                        },
+                        child: Text("투어 만들기",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18)),
                       ),
-                    );
-                  },
-                  child: Text("투어 만들기",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

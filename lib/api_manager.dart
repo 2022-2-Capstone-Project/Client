@@ -1,20 +1,62 @@
 import 'dart:convert';
 import 'package:capstone/theme_model.dart';
-import 'package:flutter/foundation.dart';
+import 'package:capstone/user_profile.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiManager {
-  static String BASE_URL = "http://172.20.10.2:8080";
+  static String BASE_URL = "http://172.30.1.45:8080";
+  static String PREF_USERNAME = "pref_username";
+  static String PREF_TOKEN = "pref_TOKEN";
+
+  @Deprecated("Use getResponse({path})")
+  static Future<http.Response> get(String url) {
+    return http.get(Uri.parse(url), headers: {
+      "Accept": "application/json",
+      "content-type": "application/json",
+    });
+  }
+
+  static Future<http.Response> getResponse(
+      {required String path, String? token}) {
+    final header = {
+      "Accept": "application/json",
+      "content-type": "application/json",
+    };
+    if (token != null) {
+      header["Authorization"] = "Bearer $token";
+    }
+    if (path.startsWith("$BASE_URL")) {
+      path = path.replaceFirst("$BASE_URL/", "");
+    }
+    print("baseurl : $BASE_URL/$path");
+    return http.get(Uri.parse("$BASE_URL/$path"), headers: header);
+  }
+
+  static void saveUsername(String username, String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(PREF_USERNAME, username);
+    prefs.setString(PREF_TOKEN, token);
+  }
+
+  static Future<String> getUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = await prefs.getString(PREF_USERNAME) ?? "";
+    return username;
+  }
+
+  static void deleteUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove("PREF_USERNAME");
+    prefs.remove("PREF_TOKEN");
+  }
 
   static Future<ThemeModel> getTheme(
       ThemeModel themeModel, XFile? imgBytes) async {
     final imageBytes = await imgBytes?.readAsBytes();
-
-    themeModel.thumbnail = imgBytes != null && imageBytes != null
-        ? "data:image/png;base64,${base64Encode(imageBytes)}"
-        : "";
 
     // final request = jsonEncode(themeModel.toJson());
 
@@ -32,7 +74,7 @@ class ApiManager {
     request.files.add(imageRequest);
     request.fields.addAll(themeModel.toJson());
 
-    print("request: $request");
+    print("request: ${themeModel.toJson()}");
 
     final response = await request
         .send(); /*await http.post(Uri.parse("$BASE_URL/tour-themes/"),
@@ -45,5 +87,52 @@ class ApiManager {
     final responseBytes = await response.stream.toBytes();
     final themeResponse = json.decode(String.fromCharCodes(responseBytes));
     return ThemeModel.fromJson(themeResponse);
+  }
+
+  static Future<UserProfile> getProfileDetail({String? username}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final myUsername =
+        username == null ? prefs.getString(PREF_USERNAME) : username;
+    final token = prefs.getString(PREF_TOKEN);
+    print("newURL: $token \N $myUsername");
+    final response =
+        await getResponse(path: "user_info/$myUsername/", token: token);
+    final body = await json.decode(response.body);
+    return UserProfile.fromJson(body);
+  }
+
+  static Future<List<ThemeModel>> getThemes() async {
+    final themesResponse = await get("$BASE_URL/tour-themes");
+    // final responseBody = themesResponse.body;
+
+    final themesBody = jsonDecode(utf8.decode(themesResponse.bodyBytes));
+
+    final themes = List.from(themesBody).map((e) {
+      return ThemeModel.fromJson(e);
+    });
+
+    final newThemes = <ThemeModel>[];
+
+    for (var element in themes) {
+      //http://172.30.1.45:8080/tour-themes/2/
+      final author = element.author;
+      if (author != null && (author.length ?? 0) > 5) {
+        print("Author: $author");
+        final authorResponse = await getResponse(path: author);
+        final profile = await getProfileDetail();
+
+        final model = Author.fromJson(json.decode(authorResponse.body));
+        final username = model.username;
+        element.author = username;
+        element.nickname = model.nickname;
+        element.rating = "${profile.reputation ?? 0}";
+        element.followers = "${profile.followers?.length ?? 0}";
+      } else {
+        element.author = "n/a";
+      }
+      newThemes.add(element);
+    }
+
+    return newThemes;
   }
 }

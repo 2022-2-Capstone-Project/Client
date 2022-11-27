@@ -1,3 +1,4 @@
+import 'package:capstone/senior/edittourdetails.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -51,7 +52,12 @@ class _TourWrotePageState extends State<TourWrotePage> {
           endActionPane: ActionPane(motion: StretchMotion(), children: [
             SlidableAction(
               onPressed: ((context) {
-                //to edit
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditTourPage(),
+                  ),
+                );
               }),
               backgroundColor: Colors.blue,
               icon: Icons.edit,

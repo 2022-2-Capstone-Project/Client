@@ -1,4 +1,5 @@
 import 'package:capstone/junior/confirmregpage.dart';
+import 'package:capstone/senior/location_controller.dart';
 import 'package:flutter/material.dart';
 
 class TourDetails extends StatefulWidget {
@@ -112,41 +113,45 @@ class _TourDetailsState extends State<TourDetails> {
           )),
         ],
       ),
-      bottomNavigationBar: Container(
-        height: 56,
-        margin: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: 66,
-              color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[Icon(Icons.favorite, color: Colors.red)],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                alignment: Alignment.center,
-                color: Colors.blueAccent,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ConfirmRegPage(),
+      bottomNavigationBar: LocationController.get.userId == null
+          ? null
+          : Container(
+              height: 56,
+              margin: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 66,
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Icon(Icons.favorite, color: Colors.red),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Colors.blueAccent,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ConfirmRegPage(),
+                            ),
+                          );
+                        },
+                        child: Text("신청하기",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18)),
                       ),
-                    );
-                  },
-                  child: Text("신청하기",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

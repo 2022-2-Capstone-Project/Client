@@ -1,15 +1,17 @@
+import 'package:capstone/api_manager.dart';
 import 'package:capstone/junior/nav_bar_junior.dart';
+import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/navigation_bar.dart';
 import 'package:capstone/signuppage.dart';
-import 'package:capstone/srorjrpage.dart';
-import 'package:get/route_manager.dart';
+// import 'package:capstone/srorjrpage.dart';
+// import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:async/async.dart';
+// import 'package:async/async.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:capstone/signuppage.dart';
+// import 'package:capstone/signuppage.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 
 Future<bool> setToken(String value) async {
@@ -34,13 +36,14 @@ class _LogInPageState extends State<LogInPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   void auth(String username, password) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = await getToken();
-    var accesstoken = "";
-    var data = {};
+    // var accesstoken = "";
+    // var data = {};
+
     try {
       final response = await http.post(
-        Uri.parse("http://172.20.10.2:8080/token/"),
+        Uri.parse("${ApiManager.BASE_URL}/token/"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
@@ -53,7 +56,14 @@ class _LogInPageState extends State<LogInPage> {
 
       final accessToken = json.decode(response.body)["access"];
       final dataMap = Jwt.parseJwt(accessToken);
-      print("dataMap: $dataMap");
+      print(dataMap);
+
+      // TODO: change USER ID from your profile
+      print("username: $accessToken");
+      ApiManager.saveUsername(dataMap['username'], accessToken);
+
+      LocationController.get.userId = dataMap['username'];
+
       if (dataMap["user_type"] == "Senior") {
         Navigator.push(
           context,
@@ -66,7 +76,10 @@ class _LogInPageState extends State<LogInPage> {
         );
       }
     } on Exception catch (error) {
-      print(error);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Login failed. Please try again"),
+        duration: Duration(seconds: 2),
+      ));
     }
 
     /*.then((response) => json
@@ -92,6 +105,19 @@ class _LogInPageState extends State<LogInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back_ios,
+              color: Color.fromARGB(255, 14, 99, 246)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text('로그인',
+            style: TextStyle(
+                color: Color.fromARGB(255, 14, 99, 246),
+                fontSize: 25,
+                fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(

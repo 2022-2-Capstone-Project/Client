@@ -1,3 +1,5 @@
+import 'package:capstone/senior/location_controller.dart';
+import 'package:capstone/senior/tourgoingon.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/junior/tourdetails.dart';
 
@@ -9,6 +11,9 @@ class TourPage extends StatefulWidget {
 class _TourPageState extends State<TourPage> {
   @override
   Widget build(BuildContext context) {
+    if (LocationController.get.userId != null) {
+      return TourGoingOn();
+    }
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

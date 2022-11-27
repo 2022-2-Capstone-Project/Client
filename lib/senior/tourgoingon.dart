@@ -30,7 +30,7 @@ class _TourGoingOnState extends State<TourGoingOn> {
         ],
       ),
       body: Column(
-        children: [],
+        children: [Text("Hey")],
       ),
     );
   }
