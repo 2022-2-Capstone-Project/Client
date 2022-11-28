@@ -136,7 +136,7 @@ class _ThemePageState extends State<ThemePage> {
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold)),
                                       Text(
-                                          '${data.nickname},${data.created}에 올림',
+                                          '${data.nickname},${DateFormat("yyyy-MM-dd").format(DateTime.parse(data.created!))} 에 올림',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(fontSize: 14)),
                                       Row(

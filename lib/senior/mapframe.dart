@@ -18,7 +18,6 @@ class MapFrame extends StatefulWidget {
 
 class _MapFrameState extends State<MapFrame> {
   late CameraPosition _cameraPosition;
-  late Marker marker;
   final MarkerId _markerId = MarkerId("loc");
 
   LatLng? _newLatLng;
@@ -31,17 +30,6 @@ class _MapFrameState extends State<MapFrame> {
     _cameraPosition =
         CameraPosition(target: LatLng(37.5051, 126.9571), zoom: 17);
 
-    marker = Marker(
-        markerId: _markerId,
-        draggable: true,
-        onDragEnd: (value) {
-          placemarkFromCoordinates(value.latitude, value.longitude)
-              .then((value1) {
-            print("address: ${value1.first}");
-            placemarks = value1;
-          });
-        },
-        position: _cameraPosition.target);
     super.initState();
   }
 
@@ -49,7 +37,7 @@ class _MapFrameState extends State<MapFrame> {
 
   @override
   Widget build(BuildContext context) {
-    //_newLatLng
+//_newLatLng
 
     return GetBuilder<LocationController>(builder: (LocationController) {
       return Scaffold(
@@ -69,16 +57,25 @@ class _MapFrameState extends State<MapFrame> {
         body: Stack(
           children: [
             GoogleMap(
-                myLocationEnabled: false,
-                gestureRecognizers: {
-                  Factory<OneSequenceGestureRecognizer>(
-                      () => TapGestureRecognizer())
-                },
-                onMapCreated: (GoogleMapController mapController) {
-                  _mapController = mapController;
-                },
-                markers: <Marker>{marker},
-                initialCameraPosition: _cameraPosition),
+              myLocationEnabled: false,
+              gestureRecognizers: {
+                Factory<OneSequenceGestureRecognizer>(
+                    () => TapGestureRecognizer())
+              },
+              onMapCreated: (GoogleMapController mapController) {
+                _mapController = mapController;
+              },
+              onCameraMove: (position) {
+                position.target;
+                placemarkFromCoordinates(
+                        position.target.latitude, position.target.longitude)
+                    .then((value1) {
+                  placemarks = value1;
+                });
+              },
+              initialCameraPosition: _cameraPosition,
+            ),
+            Align(child: Image.asset(height: 40, "images/marker_map_icon.png"))
           ],
         ),
       );
