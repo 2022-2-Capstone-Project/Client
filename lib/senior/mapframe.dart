@@ -29,7 +29,7 @@ class _MapFrameState extends State<MapFrame> {
   void initState() {
     super.initState();
     _cameraPosition =
-        CameraPosition(target: LatLng(45.521563, -122.677433), zoom: 17);
+        CameraPosition(target: LatLng(37.5051, 126.9571), zoom: 17);
 
     marker = Marker(
         markerId: _markerId,

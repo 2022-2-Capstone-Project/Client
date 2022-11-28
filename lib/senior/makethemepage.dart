@@ -377,11 +377,11 @@ class _MakeThemePageState extends State<MakeThemePage> {
                   print("BytesOfImage: $value");
                 });
 
-                ApiManager.getUsername().then((username) {
+                ApiManager.generateAurthorUrl().then((authorUrl) {
                   ApiManager.getTheme(
                           ThemeModel(
                             category: "No catgory",
-                            author: username,
+                            author: authorUrl,
                             estimated: 2,
                             startPlace: "Seoul",
                             description: _descriptionController.text,

@@ -4,8 +4,12 @@ import 'package:capstone/senior/makethemepage.dart';
 import 'package:capstone/senior/themedetailspage.dart';
 import 'package:capstone/theme_model.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../theme_model.dart';
 
 class ThemePage extends StatefulWidget {
+  late ThemeModel themeModel;
+
   @override
   _ThemePageState createState() => _ThemePageState();
 }
@@ -21,6 +25,8 @@ class _ThemePageState extends State<ThemePage> {
 
   @override
   Widget build(BuildContext context) {
+    final format = DateFormat("yyyy-MM-d");
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -124,29 +130,27 @@ class _ThemePageState extends State<ThemePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      new Text('${data.title}',
+                                      Text(' ${data.title}',
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold)),
-                                      new Text('${data.author} created when',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(fontSize: 14)),
-                                      Text('${data.participants}',
+                                      Text(
+                                          '${data.nickname},${data.created}에 올림',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(fontSize: 14)),
                                       Row(
                                         children: [
+                                          Text('${data.participants}명,',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontSize: 14)),
                                           Text(
-                                            '${data.startPlace}',
+                                            '${data.startPlace}, ',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(fontSize: 14),
                                           ),
-                                          SizedBox(
-                                            width: 15,
-                                          ),
                                           new Text(
-                                            '${data.estimated}',
+                                            ' ${data.estimated} 분 걸릴 예정',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(fontSize: 14),
                                           ),

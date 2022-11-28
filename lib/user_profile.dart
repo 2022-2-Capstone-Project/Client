@@ -13,6 +13,7 @@ class UserProfile {
   String? dateJoined;
   String? nickname;
   String? userType;
+  int? point;
   int? reputation;
   List<String?>? groups;
   List<dynamic>? userPermissions;
@@ -41,6 +42,7 @@ class UserProfile {
       this.bookmarks,
       this.likes,
       this.follows,
+      this.point,
       this.id,
       this.followers});
 
@@ -96,6 +98,7 @@ class UserProfile {
         followers!.add(v);
       });
     }
+    point = json["point"];
   }
 
   Map<String, dynamic> toJson() {
@@ -115,6 +118,7 @@ class UserProfile {
     data['user_type'] = this.userType;
     data['reputation'] = this.reputation;
     data['id'] = this.id;
+    data['point'] = this.point;
 
     data['groups'] = groups;
     if (this.userPermissions != null) {

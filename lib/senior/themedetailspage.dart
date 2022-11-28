@@ -2,6 +2,7 @@ import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/makethemepage.dart';
 import 'package:capstone/senior/maketourpage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../theme_model.dart';
 
@@ -21,6 +22,10 @@ class _ThemeDetailsState extends State<ThemeDetails> {
 
     Size size = MediaQuery.of(context).size;
     final thumbnail = model.thumbnail;
+
+    final format = DateFormat("yyyy-MM-d");
+    final date = model.created?.split("T");
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -56,25 +61,23 @@ class _ThemeDetailsState extends State<ThemeDetails> {
                           width: 10,
                         ),
                         CircleAvatar(
-                          backgroundColor: Colors.green,
-                          child: Text('S'),
+                          backgroundColor: Colors.blueAccent,
+                          child: Icon(Icons.account_circle),
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         Column(
                           children: [
-                            Text("${model.author}"),
+                            Text("${model.nickname}"),
                             Text("${model.followers} followers"),
                           ],
                         ),
                         SizedBox(
-                          width: 100,
+                          width: 200,
                         ),
-                        Column(
-                          children: [
-                            Text("${model.rating}"),
-                          ],
+                        Row(
+                          children: [Text("${model.rating}"), Text("점")],
                         )
                       ],
                     ),
@@ -110,37 +113,51 @@ class _ThemeDetailsState extends State<ThemeDetails> {
               child: Text(
             '${model.title}',
             textAlign: TextAlign.center,
-            style: TextStyle(height: 3, fontSize: 20),
+            style:
+                TextStyle(height: 2, fontSize: 30, fontWeight: FontWeight.bold),
           )),
           SliverToBoxAdapter(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                '${model.created}',
-                textAlign: TextAlign.center,
-                style: TextStyle(height: 3),
-              ),
-              Text(
-                '${model.estimated}',
-                textAlign: TextAlign.center,
-                style: TextStyle(height: 3),
-              ),
-              Text(
-                '${model.participants}',
-                textAlign: TextAlign.center,
-                style: TextStyle(height: 3),
-              ),
-            ],
+              child: Container(
+            margin: EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  '작성 일: ${date?.first}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(height: 2, fontSize: 15),
+                ),
+                Text(
+                  '예상 소요 시간: ${model.estimated} 분',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(height: 2, fontSize: 15),
+                ),
+                Text(
+                  '참가자 수: ${model.participants} 명',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(height: 2, fontSize: 15),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
           )),
           SliverToBoxAdapter(
               child: Column(
             children: [
-              Text("설명:"),
+              Text(
+                "설명:",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               Text(
                 model.description ?? "",
                 textAlign: TextAlign.center,
-                style: TextStyle(height: 3),
+                style: TextStyle(height: 3, fontSize: 20),
               ),
             ],
           )),
@@ -161,7 +178,7 @@ class _ThemeDetailsState extends State<ThemeDetails> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Icon(Icons.bookmark, color: Colors.black)
+                        Icon(Icons.bookmark_add_outlined, color: Colors.black)
                       ],
                     ),
                   ),

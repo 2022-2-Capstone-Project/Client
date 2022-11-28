@@ -2,6 +2,7 @@ import 'package:capstone/chatpage.dart';
 import 'package:capstone/junior/jrtourgoingon.dart';
 import 'package:capstone/junior/seetheme.dart';
 import 'package:capstone/senior/homepage.dart';
+import 'package:capstone/senior/sraccount.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:capstone/junior/tourpage.dart';
@@ -54,10 +55,10 @@ Widget getSelectedWidget({required int index}) {
       widget = TourPage();
       break;
     case 2:
-      widget = SeeThemePage();
+      widget = ThemePage();
       break;
     case 3:
-      widget = JuniorAccountPage();
+      widget = SeniorAccountPage();
       break;
     default:
       widget = TourPage();

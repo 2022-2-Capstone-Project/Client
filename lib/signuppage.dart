@@ -48,6 +48,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _usertypeController = TextEditingController();
 
+  String userTypeValue = "Senior";
+
   void createAccount(String username, password, nickname, usertype) {
     var data = {};
     http
@@ -164,25 +166,40 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               SizedBox(height: 30),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Color.fromARGB(255, 14, 99, 246)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: TextField(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border:
+                          Border.all(color: Color.fromARGB(255, 14, 99, 246)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: DropdownButton(
+                          isExpanded: true,
+                          value: userTypeValue,
+                          items: ["Senior", "Junior"]
+                              .map((e) => DropdownMenuItem<String>(
+                                    child: Text(e),
+                                    value: e,
+                                  ))
+                              .toList(),
+                          onChanged: ((value) {
+                            setState(() {
+                              if (value == null) return;
+                              userTypeValue = value;
+                            });
+                          }) /*TextField(
                       controller: _usertypeController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'User Type',
                       ),
+                    )*/
+                          ),
                     ),
-                  ),
-                ),
-              ),
+                  )),
               SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -199,7 +216,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 _usernameController.text,
                                 _passwordController.text,
                                 _nicknameController.text,
-                                _usertypeController.text);
+                                userTypeValue);
                           });
                         },
                         child: Text('가입',

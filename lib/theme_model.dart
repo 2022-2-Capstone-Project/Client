@@ -42,11 +42,13 @@ class ThemeModel {
       estimated: json["estimated"],
       startPlace: json['start_place'] ?? "",
       description: json["description"] ?? "",
-      author: json['author'] ?? "", //"http://172.30.1.45:8080/sign-up/3/
+      author: json['author'] ?? "",
       created: json['created'],
       nickname: json['nickname'],
     );
   }
+
+  String? get dateOnly => created?.split("T").first;
 
   Map<String, String> toJson() {
     return {

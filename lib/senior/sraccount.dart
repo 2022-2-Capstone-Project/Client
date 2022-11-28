@@ -18,6 +18,7 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: const Text('계정',
@@ -131,7 +132,7 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                                         width: 20,
                                       ),
                                       Icon(Icons.money),
-                                      Text("1200")
+                                      Text("${userProfile?.point}")
                                     ],
                                   )
                                 ],
@@ -139,47 +140,7 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                               SizedBox(
                                 width: 30,
                               ),
-                              Icon(
-                                Icons.arrow_right,
-                                size: 35,
-                              ),
                             ],
-                          ),
-                        ),
-                        SizedBox(height: 30),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ThemesWrotePage(),
-                              ),
-                            );
-                          },
-                          child: ListTile(
-                            leading: Icon(Icons.article, size: 35),
-                            title: Text('내가 쓴 테마 목록',
-                                style: TextStyle(fontSize: 20)),
-                            trailing: Icon(Icons.arrow_right_sharp, size: 35),
-                            iconColor: Colors.black,
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TourWrotePage(),
-                              ),
-                            );
-                          },
-                          child: ListTile(
-                            leading: Icon(Icons.article, size: 35),
-                            title: Text('내가 만든 투어',
-                                style: TextStyle(fontSize: 20)),
-                            trailing: Icon(Icons.arrow_right_sharp, size: 35),
-                            iconColor: Colors.black,
                           ),
                         ),
                       ],
@@ -201,12 +162,13 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                 LocationController.get.userId = null;
 
                 //logout
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NavBar(),
-                  ),
-                );
+                ApiManager.logOut().then((value) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => NavBar(),
+                      ),
+                      ((route) => false));
+                });
               },
               label: const Text('Log Out'),
               backgroundColor: Color.fromARGB(255, 14, 99, 246),

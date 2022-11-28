@@ -355,22 +355,24 @@ class _EditThemePageState extends State<EditThemePage> {
                   print("BytesOfImage: $value");
                 });
 
-                ApiManager.getTheme(
-                        ThemeModel(
-                          category: "No category",
-                          estimated: 2,
-                          startPlace: "Seoul",
-                          description: "Hello description",
-                          title: _titleController.text,
-                          participants: _count,
-                          lat: latLong.latitude,
-                          long: latLong.longitude,
-                        ),
-                        pickedImage)
-                    .then((value) {
-                  print("BytesOfImage: $value");
-                }, onError: (error) {
-                  print("BytesOfImage_error: $error");
+                ApiManager.generateAurthorUrl().then((authorUrl) {
+                  ApiManager.getTheme(
+                          ThemeModel(
+                              category: "No category",
+                              estimated: 2,
+                              startPlace: "Seoul",
+                              description: "Hello description",
+                              title: _titleController.text,
+                              participants: _count,
+                              lat: latLong.latitude,
+                              long: latLong.longitude,
+                              author: authorUrl),
+                          pickedImage)
+                      .then((value) {
+                    print("BytesOfImage: $value");
+                  }, onError: (error) {
+                    print("BytesOfImage_error: $error");
+                  });
                 });
               },
               child: Padding(

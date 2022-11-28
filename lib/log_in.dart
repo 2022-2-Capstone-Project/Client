@@ -35,6 +35,34 @@ class _LogInPageState extends State<LogInPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  void showLogin({bool? isSenior}) async {
+// dataMap["user_type"] == "Senior"
+    final username = await ApiManager.getUsername();
+    final senior = isSenior ?? await ApiManager.isSenior();
+
+    if (username.isEmpty) {
+      return;
+    }
+
+    if (senior == true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => NavBar()),
+      );
+    } else if (senior == false) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => NavBarJr()),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    showLogin();
+    super.initState();
+  }
+
   void auth(String username, password) async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = await getToken();
@@ -56,25 +84,11 @@ class _LogInPageState extends State<LogInPage> {
 
       final accessToken = json.decode(response.body)["access"];
       final dataMap = Jwt.parseJwt(accessToken);
-      print(dataMap);
 
-      // TODO: change USER ID from your profile
-      print("username: $accessToken");
       ApiManager.saveUsername(dataMap['username'], accessToken);
 
       LocationController.get.userId = dataMap['username'];
-
-      if (dataMap["user_type"] == "Senior") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => NavBar()),
-        );
-      } else if (dataMap["user_type"] == "Junior") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => NavBarJr()),
-        );
-      }
+      showLogin(isSenior: dataMap['user_type'] == "Senior");
     } on Exception catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Login failed. Please try again"),

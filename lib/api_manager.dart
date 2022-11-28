@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:capstone/theme_model.dart';
 import 'package:capstone/user_profile.dart';
 // import 'package:flutter/foundation.dart';
@@ -11,6 +12,7 @@ class ApiManager {
   static String BASE_URL = "http://172.30.1.45:8080";
   static String PREF_USERNAME = "pref_username";
   static String PREF_TOKEN = "pref_TOKEN";
+  static String PREF_USER_TYPE = "pref_USER_TYPE";
 
   @Deprecated("Use getResponse({path})")
   static Future<http.Response> get(String url) {
@@ -42,9 +44,26 @@ class ApiManager {
     prefs.setString(PREF_TOKEN, token);
   }
 
+  //PREF_USER_TYPE
+  static void setUserType(String userType) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(PREF_USER_TYPE, userType);
+  }
+
+  static Future<bool?> isSenior() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(PREF_USER_TYPE);
+  }
+
   static Future<String> getUsername() async {
     final prefs = await SharedPreferences.getInstance();
-    final username = await prefs.getString(PREF_USERNAME) ?? "";
+    final username = prefs.getString(PREF_USERNAME) ?? "";
+    return username;
+  }
+
+  static Future<String> getUserType() async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString(PREF_USERNAME) ?? "";
     return username;
   }
 
@@ -101,6 +120,23 @@ class ApiManager {
     return UserProfile.fromJson(body);
   }
 
+  static Future<String> generateAurthorUrl() async {
+    final profile = await getProfileDetail();
+    //"http://172.30.1.45:8080/sign-up/3/
+    return "http://172.30.1.45:8080/sign-up/${profile.id}/";
+  }
+
+  static Future<List<String>> getThemeTitles() async {
+    final themes = await getThemes();
+    return themes.map((e) => e.title ?? "").toList();
+  }
+
+  static Future<String> logOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    return "User logged out";
+  }
+
   static Future<List<ThemeModel>> getThemes() async {
     final themesResponse = await get("$BASE_URL/tour-themes");
     // final responseBody = themesResponse.body;
@@ -116,8 +152,7 @@ class ApiManager {
     for (var element in themes) {
       //http://172.30.1.45:8080/tour-themes/2/
       final author = element.author;
-      if (author != null && (author.length ?? 0) > 5) {
-        print("Author: $author");
+      if (author != null && (author.length) > 5) {
         final authorResponse = await getResponse(path: author);
         final profile = await getProfileDetail();
 
