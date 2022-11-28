@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiManager {
-  static String BASE_URL = "http://172.30.1.45:8080";
+  static String BASE_URL = "http://127.0.0.1:8000";
   static String PREF_USERNAME = "pref_username";
   static String PREF_TOKEN = "pref_TOKEN";
   static String PREF_USER_TYPE = "pref_USER_TYPE";
@@ -38,21 +38,24 @@ class ApiManager {
     return http.get(Uri.parse("$BASE_URL/$path"), headers: header);
   }
 
-  static void saveUsername(String username, String token) async {
+  static void saveUsername(
+      String username, String token, String userType) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(PREF_USERNAME, username);
     prefs.setString(PREF_TOKEN, token);
+    _setUserType(userType);
   }
 
   //PREF_USER_TYPE
-  static void setUserType(String userType) async {
+  static void _setUserType(String userType) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(PREF_USER_TYPE, userType);
   }
 
   static Future<bool?> isSenior() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(PREF_USER_TYPE);
+    final isSenior = prefs.getString(PREF_USER_TYPE) == "Senior";
+    return isSenior;
   }
 
   static Future<String> getUsername() async {
@@ -123,7 +126,7 @@ class ApiManager {
   static Future<String> generateAurthorUrl() async {
     final profile = await getProfileDetail();
     //"http://172.30.1.45:8080/sign-up/3/
-    return "http://172.30.1.45:8080/sign-up/${profile.id}/";
+    return "http://127.0.0.1:8000/sign-up/${profile.id}/";
   }
 
   static Future<List<String>> getThemeTitles() async {

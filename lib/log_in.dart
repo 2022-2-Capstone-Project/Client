@@ -38,7 +38,7 @@ class _LogInPageState extends State<LogInPage> {
   void showLogin({bool? isSenior}) async {
 // dataMap["user_type"] == "Senior"
     final username = await ApiManager.getUsername();
-    final senior = isSenior ?? await ApiManager.isSenior();
+    final senior = isSenior; //?? await ApiManager.isSenior();
 
     if (username.isEmpty) {
       return;
@@ -85,7 +85,8 @@ class _LogInPageState extends State<LogInPage> {
       final accessToken = json.decode(response.body)["access"];
       final dataMap = Jwt.parseJwt(accessToken);
 
-      ApiManager.saveUsername(dataMap['username'], accessToken);
+      ApiManager.saveUsername(
+          dataMap['username'], accessToken, dataMap['user_type']);
 
       LocationController.get.userId = dataMap['username'];
       showLogin(isSenior: dataMap['user_type'] == "Senior");

@@ -166,21 +166,27 @@ class _ThemePageState extends State<ThemePage> {
             future: ApiManager.getThemes(),
           ),
         ),
-        floatingActionButton: LocationController.get.userId == null
-            ? null
-            : FloatingActionButton.extended(
-                heroTag: "make theme",
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MakeThemePage(),
-                      ));
-                },
-                label: const Text('테마 만들기'),
-                icon: Icon(Icons.add),
-                backgroundColor: Color.fromARGB(255, 14, 99, 246),
-              ),
+        floatingActionButton: FutureBuilder<bool?>(
+          builder: (context, snapshot) {
+            final isSenior = snapshot.data == true;
+            return LocationController.get.userId == null || !isSenior
+                ? Container()
+                : FloatingActionButton.extended(
+                    heroTag: "make theme",
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MakeThemePage(),
+                          ));
+                    },
+                    label: const Text('테마 만들기'),
+                    icon: Icon(Icons.add),
+                    backgroundColor: Color.fromARGB(255, 14, 99, 246),
+                  );
+          },
+          future: ApiManager.isSenior(),
+        ),
       ),
     );
   }
