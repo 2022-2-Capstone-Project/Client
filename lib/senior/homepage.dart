@@ -149,12 +149,12 @@ class _ThemePageState extends State<ThemePage> {
                                             textAlign: TextAlign.right,
                                             style: TextStyle(fontSize: 14),
                                           ),
-                                          new Text(
-                                            ' ${data.estimated} 분 걸릴 예정',
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(fontSize: 14),
-                                          ),
                                         ],
+                                      ),
+                                      new Text(
+                                        ' 예상 소요 시간 : ${data.estimated} 분',
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(fontSize: 14),
                                       ),
                                     ],
                                   ))

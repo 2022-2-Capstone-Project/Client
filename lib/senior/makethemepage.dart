@@ -380,10 +380,10 @@ class _MakeThemePageState extends State<MakeThemePage> {
                 ApiManager.generateAurthorUrl().then((authorUrl) {
                   ApiManager.getTheme(
                           ThemeModel(
-                            category: "No catgory",
+                            category: "No category",
                             author: authorUrl,
-                            estimated: 2,
-                            startPlace: "Seoul",
+                            estimated: int.parse(_estimatedController.text),
+                            startPlace: _startPlaceController.text,
                             description: _descriptionController.text,
                             title: _titleController.text,
                             participants: _count,
