@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiManager {
-  static String BASE_URL = "http://127.0.0.1:8000";
+  static String BASE_URL = "http://10.0.2.2:8000";
   static String PREF_USERNAME = "pref_username";
   static String PREF_TOKEN = "pref_TOKEN";
   static String PREF_USER_TYPE = "pref_USER_TYPE";
@@ -126,7 +126,7 @@ class ApiManager {
   static Future<String> generateAurthorUrl() async {
     final profile = await getProfileDetail();
     //"http://172.30.1.45:8080/sign-up/3/
-    return "http://127.0.0.1:8000/sign-up/${profile.id}/";
+    return "http://10.0.2.2:8000/sign-up/${profile.id}/";
   }
 
   static Future<List<String>> getThemeTitles() async {
