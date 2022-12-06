@@ -1,6 +1,7 @@
 import 'package:capstone/junior/confirmregpage.dart';
 import 'package:capstone/senior/location_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TourDetails extends StatefulWidget {
   @override
@@ -38,10 +39,35 @@ class _TourDetailsState extends State<TourDetails> {
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(20),
               child: Container(
-                  child: Center(
-                      child: Text("정문에서 후문까지 편하게 가는법!",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold))),
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 10,
+                        ),
+                        CircleAvatar(
+                          backgroundColor: Colors.blueAccent,
+                          child: Icon(Icons.account_circle),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          children: [
+                            Text('nickname'),
+                            Text('followers'),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 150,
+                        ),
+                        Row(
+                          children: [Text('rating'), Text(" 점")],
+                        )
+                      ],
+                    ),
+                  ),
                   width: double.maxFinite,
                   padding: EdgeInsets.only(top: 5, bottom: 10),
                   decoration: BoxDecoration(
@@ -53,64 +79,86 @@ class _TourDetailsState extends State<TourDetails> {
                   )),
             ),
             pinned: true,
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: Color.fromARGB(255, 14, 99, 246),
             expandedHeight: 300,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                "/Users/syaffa255/StudioProjects/capstoneproject/lib/puang.jpeg",
+          ),
+          SliverToBoxAdapter(
+              child: Text(
+            'Tour title',
+            textAlign: TextAlign.center,
+            style:
+                TextStyle(height: 2, fontSize: 30, fontWeight: FontWeight.bold),
+          )),
+          SliverToBoxAdapter(
+              child: Text(
+            'Tour theme',
+            textAlign: TextAlign.center,
+            style:
+                TextStyle(height: 2, fontSize: 20, fontWeight: FontWeight.bold),
+          )),
+          SliverToBoxAdapter(
+              child: Container(
+            margin: EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  'uploaded date',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(height: 2, fontSize: 15),
+                ),
+                Text(
+                  'date, time',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(height: 2, fontSize: 15),
+                ),
+              ],
+            ),
+          )),
+          SliverToBoxAdapter(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Description:",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'description' ?? "",
+                textAlign: TextAlign.center,
+                style: TextStyle(height: 3, fontSize: 20),
+              ),
+              Container(
+                height: 400,
                 width: double.maxFinite,
-                fit: BoxFit.cover,
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Text(
+                        "Start Place: ",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Center(
+                        child: Text(
+                      'google Map',
+                      style: TextStyle(fontSize: 20, height: 3),
+                    )),
+                  ],
+                ),
               ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.green,
-                child: Text('S'),
-              ),
-              title: Text(
-                '성원, 소프트웨어학과, 4학년',
-                style: TextStyle(fontSize: 13),
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-              child: Text(
-            '테마 : 학교',
-            style: TextStyle(fontSize: 16, height: 3),
-            textAlign: TextAlign.center,
+            ],
           )),
-          SliverToBoxAdapter(
-              child: Text(
-            '예상 소요 시간: 2시간',
-            style: TextStyle(fontSize: 15, height: 3),
-            textAlign: TextAlign.center,
-          )),
-          SliverToBoxAdapter(
-              child: Text(
-            '장소: 중앙대학교 정문',
-            style: TextStyle(fontSize: 15, height: 3),
-            textAlign: TextAlign.center,
-          )),
-          SliverToBoxAdapter(
-              child: Text(
-            '게시일시 : 10분전',
-            style: TextStyle(fontSize: 15, height: 3),
-            textAlign: TextAlign.center,
-          )),
-          SliverToBoxAdapter(
-              child: Text(
-            '설명서:',
-            style: TextStyle(fontSize: 15, height: 3),
-            textAlign: TextAlign.center,
-          )),
-          SliverToBoxAdapter(
-              child: Text(
-            '새내기들과 친해지고 싶은 16학번입니다~ 우리 학교가 언덕이 좀 심하죠? 편하게 갈 수 잇는 방법 알려드려요! 부담 갖지 말고 연락주세요! *밥도 사드려요',
-            textAlign: TextAlign.center,
-            style: TextStyle(height: 3),
-          )),
+
+          // start place (map showing the lat and long of the place)
         ],
       ),
       bottomNavigationBar: LocationController.get.userId == null
@@ -130,6 +178,9 @@ class _TourDetailsState extends State<TourDetails> {
                       ],
                     ),
                   ),
+                  Text("1/3 Participants",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Expanded(
                     child: Container(
                       alignment: Alignment.center,

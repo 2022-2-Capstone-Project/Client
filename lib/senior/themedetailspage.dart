@@ -234,10 +234,18 @@ class _ThemeDetailsState extends State<ThemeDetails> {
                             color: Color.fromARGB(255, 14, 99, 246),
                             child: GestureDetector(
                               onTap: () {
+                                //http://127.0.0.1:8000/tour-themes/19/
+                                final themeIdUrls = model.url?.split("/");
+                                print(
+                                    "themeID: $themeIdUrls - ${model.author} \n ${themeIdUrls?[4]}");
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => MakeTourPage(),
+                                    builder: (context) => MakeTourPage(
+                                        chosenTheme: model.title,
+                                        username: model.author ?? "",
+                                        themeId:
+                                            int.tryParse("${themeIdUrls?[4]}")),
                                   ),
                                 );
                               },

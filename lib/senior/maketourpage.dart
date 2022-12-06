@@ -6,6 +6,8 @@ import 'package:capstone/senior/input_file.dart';
 import 'package:capstone/senior/mapframe.dart';
 import 'package:capstone/senior/navigation_bar.dart';
 import 'package:capstone/theme_model.dart';
+import 'package:capstone/tour_model.dart';
+import 'package:capstone/tour_request.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,15 +23,30 @@ import 'package:async/async.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:capstone/tour_model.dart';
 
 class MakeTourPage extends StatefulWidget {
-  MakeTourPage({Key? key}) : super(key: key);
+  String? chosenTheme;
+
+  int? themeId;
+
+  int? profileId;
+
+  String username = "";
+
+  MakeTourPage(
+      {Key? key,
+      this.chosenTheme,
+      this.themeId,
+      this.profileId,
+      this.username = ""})
+      : super(key: key);
 
   @override
   State<MakeTourPage> createState() => _MakeTourPageState();
 }
 
-class _MakeTourPageState extends State<MakeTourPage> {
+class _MakeTourPageState extends State<MakeTourPage> with RestorationMixin {
   ImagePicker _imagePicker = ImagePicker();
 
   XFile? pickedImage;
@@ -38,8 +55,28 @@ class _MakeTourPageState extends State<MakeTourPage> {
 
   static final LatLng _kMapCenter = LatLng(37.532600, 127.024612);
 
+  //String _selectedDate = "";
+
+  String _selectedTimeStr = "";
+
+  TimeOfDay? _selectedTimeofDay;
+
   static final CameraPosition _kInitialPosition =
       CameraPosition(target: _kMapCenter, zoom: 11.0, tilt: 0, bearing: 0);
+
+  final RestorableDateTime _selectedDateTime =
+      RestorableDateTime(DateTime(2022, 12, 1));
+
+  late RestorableRouteFuture<DateTime?> _restorableRouteFuture;
+
+  void _selectDate(DateTime? newSelectedDate) {
+    if (newSelectedDate != null) {
+      setState(() {
+        _selectedDateTime.value = newSelectedDate;
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar)
+      });
+    }
+  }
 
   int _count = 0;
 
@@ -59,28 +96,39 @@ class _MakeTourPageState extends State<MakeTourPage> {
 
   DateTime _selectedDate = DateTime.now();
 
+  final TextEditingController _chosenTheme = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _estimatedController = TextEditingController();
+  final TextEditingController _datetimeController = TextEditingController();
   final TextEditingController _startPlaceController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   //final Completer<GoogleMapController> _mapController = Completer();
 
-  void makeTheme(String username, password) async {
-    var data = {};
-    http
-        .post(
-          Uri.parse("${ApiManager.BASE_URL}/tour-themes/"),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'username': username,
-            'password': password,
-          }),
-        )
-        .then((response) => print(response.body))
-        .catchError((error) => print(error));
+  static Route<DateTime> _datePickerRoute(
+      BuildContext context, Object? arguments) {
+    final lastDate = DateTime.now();
+    return DialogRoute<DateTime>(
+        context: context,
+        builder: (BuildContext context) {
+          return DatePickerDialog(
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2022),
+              lastDate: DateTime(2023));
+        });
+  }
+
+  @override
+  void initState() {
+    _restorableRouteFuture = RestorableRouteFuture(
+        onComplete: _selectDate,
+        onPresent: ((navigator, arguments) => navigator.restorablePush(
+            _datePickerRoute,
+            arguments: _selectedDateTime.value.millisecondsSinceEpoch)));
+
+    if (widget.chosenTheme != null) {
+      _chosenTheme.text = widget.chosenTheme ?? "";
+    }
+    super.initState();
   }
 
   void showSnackbar(BuildContext context, String msg, {Function? action}) {
@@ -102,6 +150,7 @@ class _MakeTourPageState extends State<MakeTourPage> {
 
   @override
   Widget build(BuildContext context) {
+    Future<TimeOfDay?> _selectedTimeRes;
     return Scaffold(
       appBar: AppBar(
         title: const Text('투어 만들기',
@@ -178,7 +227,7 @@ class _MakeTourPageState extends State<MakeTourPage> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10.0),
                   child: TextField(
-                    controller: _titleController,
+                    controller: _chosenTheme,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Chosen Theme',
@@ -226,12 +275,28 @@ class _MakeTourPageState extends State<MakeTourPage> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10.0),
-                  child: TextField(
-                    controller: _estimatedController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Date, time',
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: TextButton.icon(
+                              onPressed: () {
+                                _restorableRouteFuture.present();
+                              },
+                              icon: Icon(Icons.date_range_outlined),
+                              label: Text(
+                                  "${_selectedDateTime.value.day}/${_selectedDateTime.value.month}/${_selectedDateTime.value.year}"))),
+                      Expanded(
+                          child: TextButton.icon(
+                              onPressed: () {
+                                _selectedTime(context);
+                              },
+                              icon: Icon(Icons.punch_clock_outlined),
+                              label: Text(_selectedTimeofDay == null
+                                  ? "Select time"
+                                  : "${_selectedTimeofDay?.hour}:${_selectedTimeofDay?.minute}")))
+                    ],
                   ),
                 ),
               ),
@@ -395,27 +460,24 @@ class _MakeTourPageState extends State<MakeTourPage> {
             InkWell(
               onTap: () {
                 final latLong = _kInitialPosition.target;
-                pickedImage?.readAsBytes().then((value) {
-                  print("BytesOfImage: $value");
-                });
-
-                ApiManager.generateAurthorUrl().then((authorUrl) {
-                  ApiManager.getTheme(
-                          ThemeModel(
-                            category: "No category",
-                            author: authorUrl,
-                            estimated: int.parse(_estimatedController.text),
-                            startPlace: _startPlaceController.text,
-                            description: _descriptionController.text,
-                            title: _titleController.text,
-                            participants: _count,
-                            lat: latLong.latitude,
-                            long: latLong.longitude,
-                          ),
+                ApiManager.getProfileDetail(username: widget.username)
+                    .then((value) {
+                  ApiManager.createTour(
+                          TourRequest(
+                              tourName: _titleController.text,
+                              latitude: latLong.latitude,
+                              longitude: latLong.longitude,
+                              participants: _count,
+                              startPlace: _startPlaceController.text,
+                              description: _descriptionController.text,
+                              themeId: widget.themeId,
+                              profileId: value.id,
+                              date:
+                                  "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'T'${_selectedTimeofDay?.minute}:${_selectedTimeofDay?.hour}"),
                           pickedImage)
                       .then((value) {
                     print("BytesOfImage: $value");
-                    showSnackbar(context, "Theme added successfully!");
+                    showSnackbar(context, "Tour added successfully!");
                   }, onError: (error) {
                     print("BytesOfImage_error: $error");
                   });
@@ -430,7 +492,7 @@ class _MakeTourPageState extends State<MakeTourPage> {
                       color: Color.fromARGB(255, 14, 99, 246),
                       borderRadius: BorderRadius.circular(12)),
                   child: Center(
-                      child: Text('테마 만들기',
+                      child: Text('투어 만들기',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -443,5 +505,36 @@ class _MakeTourPageState extends State<MakeTourPage> {
         ),
       ),
     );
+  }
+
+  @override
+  String? get restorationId => widget.chosenTheme;
+
+  /*
+tours
+  */
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_selectedDateTime, "selected_date_res_id");
+    registerForRestoration(_restorableRouteFuture, "date_picker_restoration");
+  }
+
+  void _selectedTime(BuildContext context) async {
+    final time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+        onEntryModeChanged: ((time) {
+          _selectedTimeStr = time.name;
+        }),
+        builder: (context, child) {
+          return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!);
+        });
+    setState(() {
+      _selectedTimeofDay = time;
+    });
   }
 }

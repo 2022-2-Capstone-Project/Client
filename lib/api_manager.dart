@@ -1,12 +1,19 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'package:capstone/theme_model.dart';
+import 'package:capstone/tour_request.dart';
+import 'package:capstone/tour_response.dart';
 import 'package:capstone/user_profile.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'theme_model.dart';
+
+import 'tour_model.dart';
+import 'tourApplication_model.dart';
 
 class ApiManager {
   static String BASE_URL = "http://127.0.0.1:8000";
@@ -138,6 +145,155 @@ class ApiManager {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     return "User logged out";
+  }
+
+  static Future<String> getThemeName(theme_id) async {
+    final themesResponse =
+        await getResponse(path: "$BASE_URL/themes/${theme_id}");
+    Map theme_name = jsonDecode(themesResponse.body);
+    return theme_name['theme_name'];
+  }
+
+  static Future<Theme> getThemeDetails(String themeId) async {
+    final themeUrl = '$BASE_URL/tour-themes/$themeId/';
+    final themeResponse = await getResponse(path: themeUrl);
+    final model = Theme.fromJson(json.decode(themeResponse.body));
+    return model;
+  }
+
+  static Future<List<TourResponse>> getTours() async {
+    final response = await getResponse(path: "tours/");
+
+    List<TourResponse> themes = [];
+
+    final result = jsonDecode(response.body);
+    final list = List.from(result).map((e) => TourResponse.fromJson(e));
+    for (var tour in list) {
+      final themeDetails =
+          await getThemeDetails((tour.themeId ?? 0).toString());
+      tour.themeTitle = themeDetails.title;
+      themes.add(tour);
+    }
+
+    return themes;
+  }
+
+  static Future<TourResponse> createTour(
+      TourRequest tourRequest, XFile? imgBytes) async {
+    // = await getResponse(path: "$BASE_URL/tours");
+
+    final imageBytes = await imgBytes?.readAsBytes();
+
+    // final request = jsonEncode(themeModel.toJson());
+
+    final request = http.MultipartRequest(
+      "POST",
+      Uri.parse("$BASE_URL/tours/"),
+    );
+
+    request.headers.addAll(
+        {"Accept": "application/json", "content-type": "application/json"});
+
+    final imageRequest = http.MultipartFile.fromBytes("thumbnail", imageBytes!,
+        contentType: MediaType.parse("image/*"), filename: "new_image.png");
+
+    request.files.add(imageRequest);
+    final jsonRequest = tourRequest.toJson();
+    request.fields.addAll(jsonRequest);
+
+    print("request: ${tourRequest.toJson()}");
+
+    final response = await request
+        .send(); /*await http.post(Uri.parse("$BASE_URL/tour-themes/"),
+        body: request,
+        headers: {
+          "Accept": "application/json",
+          "content-type": "application/json"
+        });*/
+
+    final responseBytes = await response.stream.toBytes();
+    final themeResponse = json.decode(String.fromCharCodes(responseBytes));
+    return TourResponse.fromJson(themeResponse);
+  }
+
+  static Future<List<TourModel>> getTour() async {
+    final themesResponse = await getResponse(path: "$BASE_URL/tours");
+
+    // final responseBody = themesResponse.body;
+
+    final themesBody = jsonDecode(utf8.decode(themesResponse.bodyBytes));
+
+    final tourApplicationResponse =
+        await getResponse(path: "$BASE_URL/tour-applications");
+    final TourApplicationBody =
+        jsonDecode((utf8.decode(tourApplicationResponse.bodyBytes)));
+
+    final tourApplications = List.from(TourApplicationBody).map((e) {
+      return TourApplicationModel.fromJson(e);
+    });
+
+    final themes = List.from(themesBody).map((e) {
+      return TourModel.fromJson(e);
+    });
+    final samar = <TourApplicationModel>[];
+    final newTours = <TourModel>[];
+
+    for (var element in themes) {
+      // http: //172.30.1.45:8080/tour-themes/2/
+
+      final themeUrl = '$BASE_URL/tour-themes/${element.theme_id}';
+      final profileUrl = '$BASE_URL/profiles/${element.profile_id}';
+
+      if (themeUrl != null && (themeUrl.length) > 5) {
+        final themeResponse = await getResponse(path: themeUrl);
+        final profileResponse = await getResponse(path: profileUrl);
+
+        final model = Theme.fromJson(json.decode(themeResponse.body));
+        final profileModel = Author.fromJson(json.decode(profileResponse.body));
+
+        final title = model.title;
+        final nickname = profileModel.nickname;
+        final followers = 0;
+
+        element.title = title;
+        element.authorName = nickname;
+        // element.followers = followers != null ? followers.length : 0;
+        print(samar);
+        // element.tourApplications = tourApplications.toString();
+      } else {
+        element.title = "n/a";
+        element.authorName = "n/a";
+        element.followers = null;
+      }
+
+      newTours.add(element);
+      // getThemeName(newTours.last.theme_id).then((name) {
+      //   print(name);
+      // });
+    }
+
+    return newTours;
+  }
+
+  static Future<List<TourApplicationModel>> getTourApplication() async {
+    final themesResponse =
+        await getResponse(path: "$BASE_URL/tour-applications");
+    // final responseBody = themesResponse.body;
+
+    final themesBody = jsonDecode(utf8.decode(themesResponse.bodyBytes));
+
+    final themes = List.from(themesBody).map((e) {
+      return TourApplicationModel.fromJson(e);
+    });
+
+    final newTourApplications = <TourApplicationModel>[];
+
+    for (var element in themes) {
+      //http://172.30.1.45:8080/tour-themes/2/
+
+      newTourApplications.add(element);
+    }
+    return newTourApplications;
   }
 
   static Future<List<ThemeModel>> getThemes() async {

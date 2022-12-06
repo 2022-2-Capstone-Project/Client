@@ -1,6 +1,7 @@
 import 'package:capstone/api_manager.dart';
 import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/tourgoingon.dart';
+import 'package:capstone/tour_response.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/junior/tourdetails.dart';
 
@@ -24,7 +25,7 @@ class _TourPageState extends State<TourPage> {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
-            title: const Text('투어 목록',
+            title: const Text('Tour',
                 style: TextStyle(
                     fontSize: 30,
                     color: Colors.blueAccent,
@@ -43,67 +44,69 @@ class _TourPageState extends State<TourPage> {
             ],
           ),
           body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-              height: 150,
-              padding: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blueAccent.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: <Widget>[
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundColor: Colors.blue,
-                    child: Text('CAU',
-                        style: TextStyle(color: Colors.white, fontSize: 20)),
-                  ),
-                  SingleChildScrollView(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TourDetails(),
-                          ),
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Expanded(
+                      child: FutureBuilder<List<TourResponse>>(
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null && snapshot.error == null) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
                         );
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          new Text('-학교-',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16)),
-                          new Text(' 정문에서 후문까지 편하게 가는 법!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          new Text('화, 15:00~',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16)),
-                          new Text(
-                            '10분전',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                      }
+                      return ListView.builder(
+                          itemCount: snapshot.data?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            TourResponse? tour = snapshot.data?[index];
+                            return Container(
+                              height: 100,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 70,
+                                    width: 70,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(70),
+                                      child: tour?.thumbnail == null
+                                          ? Icon(Icons.image)
+                                          : Image.network(
+                                              "${tour?.thumbnail}",
+                                              fit: BoxFit
+                                                  .cover, //tour?.thumbnail
+                                            ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Expanded(
+                                      child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("${tour?.tourName}"),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text("${tour?.date}"),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text("${tour?.themeTitle}")
+                                    ],
+                                  ))
+                                ],
+                              ),
+                            );
+                          });
+                    },
+                    future: ApiManager.getTours(),
+                  ))
                 ],
-              ),
-            ),
-          ),
+              )),
         );
       },
       future: ApiManager.isSenior(),
