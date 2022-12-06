@@ -1,9 +1,10 @@
 import 'package:capstone/api_manager.dart';
 import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/tourgoingon.dart';
-import 'package:capstone/tour_response.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone/junior/tourdetails.dart';
+
+import '../tour_model.dart';
 
 class TourPage extends StatefulWidget {
   @override
@@ -44,69 +45,113 @@ class _TourPageState extends State<TourPage> {
             ],
           ),
           body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Expanded(
-                      child: FutureBuilder<List<TourResponse>>(
-                    builder: (context, snapshot) {
-                      if (snapshot.data == null && snapshot.error == null) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      return ListView.builder(
-                          itemCount: snapshot.data?.length ?? 0,
-                          itemBuilder: (context, index) {
-                            TourResponse? tour = snapshot.data?[index];
-                            return Container(
-                              height: 100,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 70,
-                                    width: 70,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(70),
-                                      child: tour?.thumbnail == null
-                                          ? Icon(Icons.image)
-                                          : Image.network(
-                                              "${tour?.thumbnail}",
-                                              fit: BoxFit
-                                                  .cover, //tour?.thumbnail
-                                            ),
+            padding: const EdgeInsets.all(8.0),
+            child: FutureBuilder<List<TourModel>>(
+                future: ApiManager.getTour(),
+                builder: (context, snapshot) {
+                  if (snapshot.data == null && snapshot.error == null) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("${snapshot.error}"),
+                    );
+                  }
+
+                  final tourList = snapshot.data;
+
+                  if (tourList?.isEmpty == true) {
+                    return const Center(
+                      child: Text("Empty Themes"),
+                    );
+                  }
+
+                  return ListView.builder(
+                      itemCount: tourList?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final data = tourList![index];
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 30, horizontal: 10),
+                          height: 150,
+                          padding: const EdgeInsets.all(5.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueAccent.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              SizedBox(
+                                width: 20,
+                              ),
+                              CircleAvatar(
+                                radius: 35,
+                                backgroundImage:
+                                    NetworkImage(data.thumbnail.toString()),
+                                backgroundColor: Colors.blue,
+                              ),
+                              SizedBox(
+                                width: 40,
+                              ),
+                              SingleChildScrollView(
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    final senior = await ApiManager.isSenior();
+                                    if (senior == false &&
+                                        LocationController.get.userId != null)
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              TourDetails(data),
+                                        ),
+                                      );
+                                  },
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        new Text('Theme :- ${data.title}',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 16)),
+                                        new Text(
+                                            'Tour title :- ${data.tourName}',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold)),
+                                        new Text(
+                                            'Author Name :- ${data.authorName}',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold)),
+                                        new Text('Date :- ${data.date}',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 16)),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Expanded(
-                                      child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text("${tour?.tourName}"),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text("${tour?.date}"),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text("${tour?.themeTitle}")
-                                    ],
-                                  ))
-                                ],
+                                ),
                               ),
-                            );
-                          });
-                    },
-                    future: ApiManager.getTours(),
-                  ))
-                ],
-              )),
+                            ],
+                          ),
+                        );
+                      });
+                }),
+          ),
         );
       },
       future: ApiManager.isSenior(),

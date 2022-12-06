@@ -1,5 +1,8 @@
 import 'package:capstone/api_manager.dart';
+import 'package:capstone/junior/register_tour.dart';
+import 'package:capstone/junior/registerpage.dart';
 import 'package:capstone/log_in.dart';
+import 'package:capstone/points_list.dart';
 import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/navigation_bar.dart';
 import 'package:capstone/senior/themeswrote.dart';
@@ -15,6 +18,7 @@ class SeniorAccountPage extends StatefulWidget {
 }
 
 class _SeniorAccountPageState extends State<SeniorAccountPage> {
+  final senior = ApiManager.isSenior();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,78 +79,143 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                   initials = "${userProfile?.nickname}".trim()[0].toUpperCase();
                 }
 
-                return ListView(children: [
-                  Container(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                  backgroundColor: Colors.pink.shade100,
-                                  child: Text(initials,
-                                      style: TextStyle(
-                                          fontSize: 25, color: Colors.black)),
-                                  radius: 35),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text('${userProfile?.nickname}',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        ".",
+                return ListView(
+                  children: [
+                    Container(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                    backgroundColor: Colors.pink.shade100,
+                                    child: Text(initials,
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text('${userProfile?.userType}',
+                                            fontSize: 25, color: Colors.black)),
+                                    radius: 35),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text('${userProfile?.nickname}',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          ".",
                                           style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          )),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.favorite_outline),
-                                      Text("${userProfile?.likes?.length}"),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      Icon(Icons.money),
-                                      Text("${userProfile?.point}")
-                                    ],
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                width: 30,
-                              ),
-                            ],
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text('${userProfile?.userType}',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.favorite_outline),
+                                        Text("${userProfile?.likes?.length}"),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Icon(Icons.money),
+                                        Text("${userProfile?.point}")
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 30,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ]);
+                    SizedBox(
+                      height: 80,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterTourPage(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 2,
+                          ),
+                          Icon(Icons.article, size: 38),
+                          SizedBox(
+                            width: 2,
+                          ),
+                          Text('내가 신청한 투어', style: TextStyle(fontSize: 28)),
+                          Icon(Icons.arrow_right_sharp, size: 35),
+                          SizedBox(
+                            width: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PointsListPage(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 2,
+                          ),
+                          Icon(Icons.article, size: 38),
+                          SizedBox(
+                            width: 2,
+                          ),
+                          Text('포인트 상점', style: TextStyle(fontSize: 30)),
+                          SizedBox(
+                            width: 2,
+                          ),
+                          Icon(Icons.arrow_right_sharp, size: 35),
+                          SizedBox(
+                            width: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
               },
               future: ApiManager.getProfileDetail(),
             ),

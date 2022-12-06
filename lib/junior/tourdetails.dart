@@ -1,9 +1,12 @@
+import 'package:capstone/tour_model.dart';
 import 'package:capstone/junior/confirmregpage.dart';
 import 'package:capstone/senior/location_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TourDetails extends StatefulWidget {
+  final TourModel tour;
+  TourDetails(this.tour);
   @override
   _TourDetailsState createState() => _TourDetailsState();
 }
@@ -36,6 +39,14 @@ class _TourDetailsState extends State<TourDetails> {
         slivers: [
           SliverAppBar(
             toolbarHeight: 60,
+            flexibleSpace: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * .5,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage('${widget.tour.thumbnail}'),
+                      fit: BoxFit.cover)),
+            ),
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(20),
               child: Container(
@@ -55,8 +66,8 @@ class _TourDetailsState extends State<TourDetails> {
                         ),
                         Column(
                           children: [
-                            Text('nickname'),
-                            Text('followers'),
+                            Text('${widget.tour.authorName}'),
+                            Text('${widget.tour.followers} followers'),
                           ],
                         ),
                         SizedBox(
@@ -84,14 +95,14 @@ class _TourDetailsState extends State<TourDetails> {
           ),
           SliverToBoxAdapter(
               child: Text(
-            'Tour title',
+            '${widget.tour.tourName}',
             textAlign: TextAlign.center,
             style:
                 TextStyle(height: 2, fontSize: 30, fontWeight: FontWeight.bold),
           )),
           SliverToBoxAdapter(
               child: Text(
-            'Tour theme',
+            'theme :- ${widget.tour.title}',
             textAlign: TextAlign.center,
             style:
                 TextStyle(height: 2, fontSize: 20, fontWeight: FontWeight.bold),
@@ -112,7 +123,7 @@ class _TourDetailsState extends State<TourDetails> {
                   style: TextStyle(height: 2, fontSize: 15),
                 ),
                 Text(
-                  'date, time',
+                  '${widget.tour.date}',
                   textAlign: TextAlign.center,
                   style: TextStyle(height: 2, fontSize: 15),
                 ),
@@ -128,12 +139,11 @@ class _TourDetailsState extends State<TourDetails> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Text(
-                'description' ?? "",
+                '${widget.tour.description}' ?? "",
                 textAlign: TextAlign.center,
                 style: TextStyle(height: 3, fontSize: 20),
               ),
               Container(
-                height: 400,
                 width: double.maxFinite,
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -142,9 +152,23 @@ class _TourDetailsState extends State<TourDetails> {
                   children: [
                     Center(
                       child: Text(
-                        "Start Place: ",
+                        "Start Place: ${widget.tour.start_place}",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    'https://geology.com/world/world-map.gif'),
+                                fit: BoxFit.cover)),
+                        width: MediaQuery.of(context).size.width * .8,
+                        height: 300,
                       ),
                     ),
                     Center(
@@ -178,7 +202,7 @@ class _TourDetailsState extends State<TourDetails> {
                       ],
                     ),
                   ),
-                  Text("1/3 Participants",
+                  Text("1/${widget.tour.participants} Participants",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   Expanded(

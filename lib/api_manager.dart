@@ -16,7 +16,7 @@ import 'tour_model.dart';
 import 'tourApplication_model.dart';
 
 class ApiManager {
-  static String BASE_URL = "http://10.0.2.2:8000";
+  static String BASE_URL = "http://127.0.0.1:8000";
   static String PREF_USERNAME = "pref_username";
   static String PREF_TOKEN = "pref_TOKEN";
   static String PREF_USER_TYPE = "pref_USER_TYPE";
@@ -133,7 +133,7 @@ class ApiManager {
   static Future<String> generateAurthorUrl() async {
     final profile = await getProfileDetail();
     //"http://172.30.1.45:8080/sign-up/3/
-    return "http://10.0.2.2:8000/sign-up/${profile.id}/";
+    return "http://127.0.0.1:8000/sign-up/${profile.id}/";
   }
 
   static Future<List<String>> getThemeTitles() async {
@@ -166,7 +166,7 @@ class ApiManager {
 
     List<TourResponse> themes = [];
 
-    final result = jsonDecode(response.body);
+    final result = jsonDecode(utf8.decode(response.bodyBytes));
     final list = List.from(result).map((e) => TourResponse.fromJson(e));
     for (var tour in list) {
       final themeDetails =
