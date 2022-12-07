@@ -15,6 +15,7 @@ class _TourDetailsState extends State<TourDetails> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final date = widget.tour.created?.split("T");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -74,7 +75,7 @@ class _TourDetailsState extends State<TourDetails> {
                           width: 150,
                         ),
                         Row(
-                          children: [Text('rating'), Text(" 점")],
+                          children: [Text('0'), Text(" 점")],
                         )
                       ],
                     ),
@@ -102,7 +103,7 @@ class _TourDetailsState extends State<TourDetails> {
           )),
           SliverToBoxAdapter(
               child: Text(
-            'theme :- ${widget.tour.title}',
+            'theme:${widget.tour.title}',
             textAlign: TextAlign.center,
             style:
                 TextStyle(height: 2, fontSize: 20, fontWeight: FontWeight.bold),
@@ -118,7 +119,7 @@ class _TourDetailsState extends State<TourDetails> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  'uploaded date',
+                  '${date?.first}',
                   textAlign: TextAlign.center,
                   style: TextStyle(height: 2, fontSize: 15),
                 ),
@@ -161,21 +162,23 @@ class _TourDetailsState extends State<TourDetails> {
                       height: 10,
                     ),
                     Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    'https://geology.com/world/world-map.gif'),
-                                fit: BoxFit.cover)),
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width * .8,
                         height: 300,
+                        child: GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                              target: LatLng(widget.tour.latitude!,
+                                  widget.tour.longitude!),
+                              zoom: 10),
+                          markers: {
+                            Marker(
+                                markerId: const MarkerId('start'),
+                                position: LatLng(widget.tour.latitude!,
+                                    widget.tour.longitude!))
+                          },
+                        ),
                       ),
                     ),
-                    Center(
-                        child: Text(
-                      'google Map',
-                      style: TextStyle(fontSize: 20, height: 3),
-                    )),
                   ],
                 ),
               ),
@@ -211,12 +214,12 @@ class _TourDetailsState extends State<TourDetails> {
                       color: Colors.blueAccent,
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(
+                          /*Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ConfirmRegPage(),
                             ),
-                          );
+                          ); */
                         },
                         child: Text("신청하기",
                             style: TextStyle(

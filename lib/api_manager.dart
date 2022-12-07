@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
+
 import 'package:capstone/theme_model.dart';
 import 'package:capstone/tour_request.dart';
 import 'package:capstone/tour_response.dart';
@@ -9,8 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'theme_model.dart';
 
 import 'tour_model.dart';
 import 'tourApplication_model.dart';
@@ -133,7 +131,7 @@ class ApiManager {
   static Future<String> generateAurthorUrl() async {
     final profile = await getProfileDetail();
     //"http://172.30.1.45:8080/sign-up/3/
-    return "http://127.0.0.1:8000/sign-up/${profile.id}/";
+    return "${BASE_URL}/sign-up/${profile.id}/";
   }
 
   static Future<List<String>> getThemeTitles() async {
@@ -150,7 +148,7 @@ class ApiManager {
   static Future<String> getThemeName(theme_id) async {
     final themesResponse =
         await getResponse(path: "$BASE_URL/themes/${theme_id}");
-    Map theme_name = jsonDecode(themesResponse.body);
+    Map theme_name = jsonDecode(utf8.decode(themesResponse.bodyBytes));
     return theme_name['theme_name'];
   }
 
@@ -178,42 +176,39 @@ class ApiManager {
     return themes;
   }
 
-  static Future<TourResponse> createTour(
-      TourRequest tourRequest, XFile? imgBytes) async {
+  static Future<TourResponse> createTour(TourRequest tourRequest) async {
     // = await getResponse(path: "$BASE_URL/tours");
 
-    final imageBytes = await imgBytes?.readAsBytes();
-
     // final request = jsonEncode(themeModel.toJson());
+    print(tourRequest.toJson());
+    print("$BASE_URL/tours/");
+    print("Hello world");
 
-    final request = http.MultipartRequest(
-      "POST",
-      Uri.parse("$BASE_URL/tours/"),
-    );
-
-    request.headers.addAll(
-        {"Accept": "application/json", "content-type": "application/json"});
-
-    final imageRequest = http.MultipartFile.fromBytes("thumbnail", imageBytes!,
-        contentType: MediaType.parse("image/*"), filename: "new_image.png");
-
-    request.files.add(imageRequest);
-    final jsonRequest = tourRequest.toJson();
-    request.fields.addAll(jsonRequest);
-
-    print("request: ${tourRequest.toJson()}");
-
-    final response = await request
-        .send(); /*await http.post(Uri.parse("$BASE_URL/tour-themes/"),
-        body: request,
+    var response = http.post(Uri.parse("$BASE_URL/tours/"),
         headers: {
           "Accept": "application/json",
           "content-type": "application/json"
-        });*/
+        },
+        body: json.encode(tourRequest.toJson()));
 
-    final responseBytes = await response.stream.toBytes();
-    final themeResponse = json.decode(String.fromCharCodes(responseBytes));
-    return TourResponse.fromJson(themeResponse);
+    print("tour");
+    print(tourRequest.toJson());
+    response.then((value) => print(value.body));
+
+    // request.headers.addAll(
+    //     {"Accept": "application/json", "content-type": "application/json"});
+
+    // final jsonRequest = tourRequest.toJson();
+    // request.fields.addAll(jsonRequest);
+
+    // final response = await request
+    //     .send();
+    ///*await http.post(Uri.parse("$BASE_URL/tour-themes/"),
+    // body: request,
+
+    // final responseBytes = await response.stream.toBytes();
+    // final themeResponse = json.decode(String.fromCharCodes(responseBytes));/
+    return TourResponse();
   }
 
   static Future<List<TourModel>> getTour() async {

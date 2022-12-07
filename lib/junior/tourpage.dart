@@ -123,22 +123,21 @@ class _TourPageState extends State<TourPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: <Widget>[
-                                        new Text('Theme :- ${data.title}',
+                                        new Text('Theme:${data.title}',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(fontSize: 16)),
-                                        new Text(
-                                            'Tour title :- ${data.tourName}',
+                                        new Text('Tour title:${data.tourName}',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold)),
                                         new Text(
-                                            'Author Name :- ${data.authorName}',
+                                            'Author Name:${data.authorName}',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold)),
-                                        new Text('Date :- ${data.date}',
+                                        new Text('Date:${data.date}',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(fontSize: 16)),
                                       ],

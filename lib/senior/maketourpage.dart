@@ -24,6 +24,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:capstone/tour_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
+import 'homepage.dart';
 
 class MakeTourPage extends StatefulWidget {
   String? chosenTheme;
@@ -58,6 +61,7 @@ class _MakeTourPageState extends State<MakeTourPage> with RestorationMixin {
   //String _selectedDate = "";
 
   String _selectedTimeStr = "";
+  String imageUrl = "";
 
   TimeOfDay? _selectedTimeofDay;
 
@@ -148,6 +152,52 @@ class _MakeTourPageState extends State<MakeTourPage> with RestorationMixin {
         )));
   }
 
+  Future<void> photoOption() async {
+    try {
+      DateTime now = DateTime.now();
+      var datestamp = DateFormat("yyyyMMdd'T'HHmmss");
+      String currentdate = datestamp.format(now);
+      // var imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+      // pickedImage = imageFile;
+      _imagePicker.pickImage(source: ImageSource.gallery).then(((value) async {
+        pickedImage = value;
+
+        Reference ref = FirebaseStorage.instance.ref().child(pickedImage!.path);
+        UploadTask uploadTask = ref.putFile(File(pickedImage!.path));
+
+        var dowurl = await (await uploadTask.whenComplete(() => null))
+            .ref
+            .getDownloadURL();
+        String url = dowurl.toString();
+
+        imageUrl = url;
+
+        if (value?.path != null) {
+          final imgFile = File(value!.path);
+
+          _imagePicked.sink.add(imgFile);
+        }
+      }), onError: (error) {
+        print("ONERROR -> $error");
+      });
+
+      // Reference ref = FirebaseStorage.instance.ref();
+      // UploadTask uploadTask = ref.putFile(File(pickedImage!.path));
+      // // .child("images")
+      // // .child("$currentdate.jpg");
+      // print("ref");
+      // var downloadableUrl = ref.getDownloadURL().then((value) {
+      //   print("image url");
+      //   print(value);
+      // });
+
+      // print(downloadableUrl);
+
+    } catch (error) {
+      print(error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<TimeOfDay?> _selectedTimeRes;
@@ -173,7 +223,8 @@ class _MakeTourPageState extends State<MakeTourPage> with RestorationMixin {
             //upload photo
             InkWell(
               onTap: () {
-                _imagePicker.pickImage(source: ImageSource.gallery).then(
+                photoOption();
+                /*_imagePicker.pickImage(source: ImageSource.gallery).then(
                     ((value) {
                   pickedImage = value;
 
@@ -184,7 +235,7 @@ class _MakeTourPageState extends State<MakeTourPage> with RestorationMixin {
                   }
                 }), onError: (error) {
                   print("ONERROR -> $error");
-                });
+                }); */
               },
               child: Container(
                 height: 60,
@@ -463,19 +514,19 @@ class _MakeTourPageState extends State<MakeTourPage> with RestorationMixin {
                 ApiManager.getProfileDetail(username: widget.username)
                     .then((value) {
                   ApiManager.createTour(
-                          TourRequest(
-                              tourName: _titleController.text,
-                              latitude: latLong.latitude,
-                              longitude: latLong.longitude,
-                              participants: _count,
-                              startPlace: _startPlaceController.text,
-                              description: _descriptionController.text,
-                              themeId: widget.themeId,
-                              profileId: value.id,
-                              date:
-                                  "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'T'${_selectedTimeofDay?.minute}:${_selectedTimeofDay?.hour}"),
-                          pickedImage)
-                      .then((value) {
+                    TourRequest(
+                        tourName: _titleController.text,
+                        latitude: latLong.latitude,
+                        longitude: latLong.longitude,
+                        //thumbnail: imageUrl,
+                        participants: _count,
+                        startPlace: _startPlaceController.text,
+                        description: _descriptionController.text,
+                        themeId: widget.themeId,
+                        profileId: value.id,
+                        date:
+                            "${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}'T'${_selectedTimeofDay?.minute}:${_selectedTimeofDay?.hour}"),
+                  ).then((value) {
                     print("BytesOfImage: $value");
                     showSnackbar(context, "Tour added successfully!");
                   }, onError: (error) {
