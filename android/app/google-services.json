@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1000193766405",
+    "project_id": "tourapp-b81e9",
+    "storage_bucket": "tourapp-b81e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000193766405:android:aa228c0812e588f21c986c",
+        "android_client_info": {
+          "package_name": "com.example.capstone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000193766405-s7v5jlprsju83jei42uuk4mfu3brb9u9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkIGCkjOMj_hywYfPwHpIkqawia6TPVjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000193766405-s7v5jlprsju83jei42uuk4mfu3brb9u9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,6 @@
+import 'package:capstone/theme_model.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TourGoingOn extends StatefulWidget {
   const TourGoingOn({super.key});
@@ -26,45 +28,60 @@ class _TourGoingOnState extends State<TourGoingOn> {
       ),
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 50,
-              ),
-              Text(
-                'Tour title',
-                style: TextStyle(fontSize: 30),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              Container(
-                  height: 100,
-                  width: 300,
-                  decoration: BoxDecoration(
-                      color: Colors.grey.shade400,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Center(
-                      child: Text(
-                    'Theme description',
-                    style: TextStyle(fontSize: 15),
-                  ))),
-              SizedBox(
-                height: 40,
-              ),
-              Text(
-                'Map : ',
-                style: TextStyle(fontSize: 25),
-              ),
-              SizedBox(height: 40),
-              Container(
-                height: 100,
-                width: 300,
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade400,
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 50,
+                ),
+                Text(
+                  '투어 장소에 있을때,',
+                  style: TextStyle(fontSize: 18),
+                ),
+                Text(
+                  '"투어 시작" 버튼을 눌러주세요',
+                  style: TextStyle(fontSize: 18),
+                ),
+                SizedBox(
+                  height: 25,
+                ),
+                /*Container(
+                    height: 100,
+                    width: 300,
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Center(
+                        child: Text(
+                      '${widget.themeModel.description}',
+                      style: TextStyle(fontSize: 15),
+                    ))), */
+                SizedBox(
+                  height: 40,
+                ),
+                Text(
+                  'Map : ',
+                  style: TextStyle(fontSize: 25),
+                ),
+                SizedBox(height: 40),
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * .8,
+                    height: 300,
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                          target: LatLng(37.5051, 126.9571), zoom: 10),
+                      markers: {
+                        Marker(
+                            markerId: const MarkerId('start'),
+                            position: LatLng(37.5051, 126.9571))
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -76,7 +93,7 @@ class _TourGoingOnState extends State<TourGoingOn> {
             SizedBox(
               width: 20,
             ),
-            Text("1/4 Participants",
+            Text("2 Participants",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             SizedBox(
               width: 20,

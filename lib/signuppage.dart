@@ -9,7 +9,6 @@ import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'srorjrpage.dart';
 import 'dart:convert';
 
 class SignUp {

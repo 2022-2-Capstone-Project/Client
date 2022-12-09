@@ -15,6 +15,8 @@ class ThemePage extends StatefulWidget {
 }
 
 class _ThemePageState extends State<ThemePage> {
+  bool ispreimun = false;
+
   @override
   void initState() {
     ApiManager.getThemes().then((value) {

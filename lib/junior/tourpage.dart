@@ -17,11 +17,11 @@ class _TourPageState extends State<TourPage> {
     return SafeArea(
         child: FutureBuilder<bool?>(
       builder: (context, snapshot) {
-        final isSenior = snapshot.data == true;
+        //final isSenior = snapshot.data == true;
 
-        if (isSenior) {
+        /*if (isSenior) {
           return TourGoingOn();
-        }
+        } */
 
         return Scaffold(
           appBar: AppBar(
@@ -60,7 +60,7 @@ class _TourPageState extends State<TourPage> {
                       child: Text("${snapshot.error}"),
                     );
                   }
-
+                  print(snapshot.data);
                   final tourList = snapshot.data;
 
                   if (tourList?.isEmpty == true) {
@@ -102,14 +102,13 @@ class _TourPageState extends State<TourPage> {
                                 backgroundColor: Colors.blue,
                               ),
                               SizedBox(
-                                width: 40,
+                                width: 30,
                               ),
                               SingleChildScrollView(
                                 child: GestureDetector(
                                   onTap: () async {
                                     final senior = await ApiManager.isSenior();
-                                    if (senior == false &&
-                                        LocationController.get.userId != null)
+                                    if (LocationController.get.userId != null)
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -118,27 +117,29 @@ class _TourPageState extends State<TourPage> {
                                         ),
                                       );
                                   },
-                                  child: Center(
+                                  child: Expanded(
+                                    flex: 3,
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        new Text('Theme :- ${data.title}',
+                                        Text(' ${data.title}',
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(fontSize: 16)),
-                                        new Text(
-                                            'Tour title :- ${data.tourName}',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold)),
-                                        new Text(
-                                            'Author Name :- ${data.authorName}',
+                                            style:
+                                                const TextStyle(fontSize: 16)),
+                                        Text('${data.tourName}',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold)),
-                                        new Text('Date :- ${data.date}',
+                                        Text('${data.authorName}',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold)),
+                                        Text('${data.date}',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(fontSize: 16)),
                                       ],

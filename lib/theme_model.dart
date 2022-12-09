@@ -9,6 +9,7 @@ class ThemeModel {
   String startPlace;
   String? description;
   String? author;
+  bool premium;
   String? nickname;
   String? rating;
   String? followers;
@@ -25,6 +26,7 @@ class ThemeModel {
       required this.estimated,
       required this.startPlace,
       required this.description,
+      required this.premium,
       this.author,
       this.nickname,
       this.title,
@@ -38,6 +40,7 @@ class ThemeModel {
       long: json["longitude"],
       thumbnail: json["thumbnail"],
       title: json["title"],
+      premium: json["is_premium"],
       participants: json['participants'],
       estimated: json["estimated"],
       startPlace: json['start_place'] ?? "",
@@ -60,6 +63,7 @@ class ThemeModel {
       "start_place": startPlace,
       "description": description ?? "",
       "created": created ?? "",
+      "is_premium": premium.toString(),
       "author": author ?? "",
       "estimated": estimated.toString(),
       "nickname": nickname.toString(),

@@ -1,19 +1,19 @@
 import 'dart:convert';
-import 'dart:ffi';
+
+import 'package:capstone/points_model.dart';
 import 'package:capstone/theme_model.dart';
 import 'package:capstone/tour_request.dart';
 import 'package:capstone/tour_response.dart';
 import 'package:capstone/user_profile.dart';
+
 // import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'theme_model.dart';
-
-import 'tour_model.dart';
 import 'tourApplication_model.dart';
+import 'tour_model.dart';
 
 class ApiManager {
   static String BASE_URL = "http://127.0.0.1:8000";
@@ -36,7 +36,7 @@ class ApiManager {
       "content-type": "application/json",
     };
     if (token != null) {
-      header["Authorization"] = "Bearer $token";
+      header["Authorization"] = "TOKEN $token";
     }
     if (path.startsWith("$BASE_URL")) {
       path = path.replaceFirst("$BASE_URL/", "");
@@ -126,14 +126,15 @@ class ApiManager {
     print("newURL: $token \N $myUsername");
     final response =
         await getResponse(path: "user_info/$myUsername/", token: token);
-    final body = await json.decode(response.body);
+    final body = await json
+        .decode(utf8.decode(response.bodyBytes)); // need to change here
     return UserProfile.fromJson(body);
   }
 
   static Future<String> generateAurthorUrl() async {
     final profile = await getProfileDetail();
     //"http://172.30.1.45:8080/sign-up/3/
-    return "http://127.0.0.1:8000/sign-up/${profile.id}/";
+    return "${BASE_URL}/sign-up/${profile.id}/";
   }
 
   static Future<List<String>> getThemeTitles() async {
@@ -150,15 +151,29 @@ class ApiManager {
   static Future<String> getThemeName(theme_id) async {
     final themesResponse =
         await getResponse(path: "$BASE_URL/themes/${theme_id}");
-    Map theme_name = jsonDecode(themesResponse.body);
+    Map theme_name = jsonDecode(utf8.decode(themesResponse.bodyBytes));
     return theme_name['theme_name'];
   }
 
   static Future<Theme> getThemeDetails(String themeId) async {
     final themeUrl = '$BASE_URL/tour-themes/$themeId/';
     final themeResponse = await getResponse(path: themeUrl);
-    final model = Theme.fromJson(json.decode(themeResponse.body));
+    final model =
+        Theme.fromJson(json.decode(utf8.decode(themeResponse.bodyBytes)));
     return model;
+  }
+
+  static Future<List<Points>> getPoints() async {
+    final pointUrl = '$BASE_URL/point-shop/';
+    final pointResponse = await getResponse(path: pointUrl);
+
+    List<Points> points = [];
+
+    final result =
+        jsonDecode(json.decode(utf8.decode(pointResponse.bodyBytes)));
+    final list = List.from(result).map((e) => Points.fromJson(e));
+    print(pointResponse.body);
+    return points;
   }
 
   static Future<List<TourResponse>> getTours() async {
@@ -178,14 +193,26 @@ class ApiManager {
     return themes;
   }
 
+  static Future<TourResponse> updateApplicationTour() async {
+    var response = http.put(Uri.parse("$BASE_URL/tour-applications/"),
+        headers: {
+          "Accept": "application/json",
+          "content-type": "application/json"
+        },
+        body: json.encode({
+          "participants_on_site": 1,
+        }));
+
+    response.then((value) {
+      print(value.body);
+    });
+
+    return TourResponse();
+  }
+
   static Future<TourResponse> createTour(
       TourRequest tourRequest, XFile? imgBytes) async {
-    // = await getResponse(path: "$BASE_URL/tours");
-
     final imageBytes = await imgBytes?.readAsBytes();
-
-    // final request = jsonEncode(themeModel.toJson());
-
     final request = http.MultipartRequest(
       "POST",
       Uri.parse("$BASE_URL/tours/"),
@@ -198,22 +225,25 @@ class ApiManager {
         contentType: MediaType.parse("image/*"), filename: "new_image.png");
 
     request.files.add(imageRequest);
-    final jsonRequest = tourRequest.toJson();
-    request.fields.addAll(jsonRequest);
+    request.fields.addAll(tourRequest.toJson());
+    final response = await request.send();
+    // response.then((value) {
+    //   print(value.body);
+    //
+    //   var response2 = http.post(Uri.parse("$BASE_URL/tour-applications/"),
+    //       headers: {
+    //         "Accept": "application/json",
+    //         "content-type": "application/json"
+    //       },
+    //       body: json.encode({
+    //         "participants_on_site": 0,
+    //         "tour_finished": false,
+    //         "tour": json.decode(value.body)["id"],
+    //         "user": []
+    //       }));
+    // });
 
-    print("request: ${tourRequest.toJson()}");
-
-    final response = await request
-        .send(); /*await http.post(Uri.parse("$BASE_URL/tour-themes/"),
-        body: request,
-        headers: {
-          "Accept": "application/json",
-          "content-type": "application/json"
-        });*/
-
-    final responseBytes = await response.stream.toBytes();
-    final themeResponse = json.decode(String.fromCharCodes(responseBytes));
-    return TourResponse.fromJson(themeResponse);
+    return TourResponse();
   }
 
   static Future<List<TourModel>> getTour() async {
@@ -235,7 +265,7 @@ class ApiManager {
     final themes = List.from(themesBody).map((e) {
       return TourModel.fromJson(e);
     });
-    final samar = <TourApplicationModel>[];
+    final appmodel = <TourApplicationModel>[];
     final newTours = <TourModel>[];
 
     for (var element in themes) {
@@ -248,8 +278,10 @@ class ApiManager {
         final themeResponse = await getResponse(path: themeUrl);
         final profileResponse = await getResponse(path: profileUrl);
 
-        final model = Theme.fromJson(json.decode(themeResponse.body));
-        final profileModel = Author.fromJson(json.decode(profileResponse.body));
+        final model =
+            Theme.fromJson(json.decode(utf8.decode(themeResponse.bodyBytes)));
+        final profileModel = Author.fromJson(
+            json.decode(utf8.decode(profileResponse.bodyBytes)));
 
         final title = model.title;
         final nickname = profileModel.nickname;
@@ -258,7 +290,7 @@ class ApiManager {
         element.title = title;
         element.authorName = nickname;
         // element.followers = followers != null ? followers.length : 0;
-        print(samar);
+        print(appmodel);
         // element.tourApplications = tourApplications.toString();
       } else {
         element.title = "n/a";
@@ -273,6 +305,18 @@ class ApiManager {
     }
 
     return newTours;
+  }
+
+  static Future<List<TourApplicationModel>> getJuniorTour() async {
+    var response = http.get(Uri.parse("$BASE_URL/tour-applications/"));
+
+    List<TourApplicationModel>? newTours;
+
+    response.then((value) {
+      newTours = json.decode(value.body);
+    });
+
+    return newTours!;
   }
 
   static Future<List<TourApplicationModel>> getTourApplication() async {
@@ -315,7 +359,8 @@ class ApiManager {
         final authorResponse = await getResponse(path: author);
         final profile = await getProfileDetail();
 
-        final model = Author.fromJson(json.decode(authorResponse.body));
+        final model =
+            Author.fromJson(json.decode(utf8.decode(authorResponse.bodyBytes)));
         final username = model.username;
         element.author = username;
         element.nickname = model.nickname;

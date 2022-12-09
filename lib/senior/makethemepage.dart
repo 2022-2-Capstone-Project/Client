@@ -37,6 +37,7 @@ class _MakeThemePageState extends State<MakeThemePage> {
   StreamController<File> _imagePicked = StreamController.broadcast();
 
   static final LatLng _kMapCenter = LatLng(37.532600, 127.024612);
+  bool _isPrivate = false;
 
   static final CameraPosition _kInitialPosition =
       CameraPosition(target: _kMapCenter, zoom: 11.0, tilt: 0, bearing: 0);
@@ -341,8 +342,32 @@ class _MakeThemePageState extends State<MakeThemePage> {
               ),
             ),
 
-            SizedBox(
-              height: 30,
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: _isPrivate,
+                      onChanged: (value) {
+                        setState(() {
+                          _isPrivate = value!;
+                        });
+                      },
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Text(
+                      'Premium access',
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                    ),
+                  ],
+                )),
+            const SizedBox(
+              height: 20,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -367,11 +392,12 @@ class _MakeThemePageState extends State<MakeThemePage> {
             ),
 
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             //make theme button
             InkWell(
               onTap: () {
+                print(_isPrivate);
                 final latLong = _kInitialPosition.target;
                 pickedImage?.readAsBytes().then((value) {
                   print("BytesOfImage: $value");
@@ -386,6 +412,7 @@ class _MakeThemePageState extends State<MakeThemePage> {
                             startPlace: _startPlaceController.text,
                             description: _descriptionController.text,
                             title: _titleController.text,
+                            premium: _isPrivate,
                             participants: _count,
                             lat: latLong.latitude,
                             long: latLong.longitude,

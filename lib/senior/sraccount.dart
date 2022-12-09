@@ -1,12 +1,12 @@
+import 'dart:math';
+
 import 'package:capstone/api_manager.dart';
 import 'package:capstone/junior/register_tour.dart';
-import 'package:capstone/junior/registerpage.dart';
 import 'package:capstone/log_in.dart';
 import 'package:capstone/points_list.dart';
+import 'package:capstone/points_model.dart';
 import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/navigation_bar.dart';
-import 'package:capstone/senior/themeswrote.dart';
-import 'package:capstone/senior/tourwrote.dart';
 import 'package:capstone/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -159,7 +159,9 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RegisterTourPage(),
+                            builder: (context) => RegisterTourPage(
+                              userProfile: userProfile,
+                            ),
                           ),
                         );
                       },
@@ -173,7 +175,11 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                           SizedBox(
                             width: 2,
                           ),
-                          Text('내가 신청한 투어', style: TextStyle(fontSize: 28)),
+                          Text(
+                              userProfile!.userType == "Senior"
+                                  ? '내가 개설한 투어'
+                                  : '내가 신청한 투어',
+                              style: TextStyle(fontSize: 28)),
                           Icon(Icons.arrow_right_sharp, size: 35),
                           SizedBox(
                             width: 2,
@@ -189,7 +195,7 @@ class _SeniorAccountPageState extends State<SeniorAccountPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PointsListPage(),
+                            builder: (context) => PointsListPage(Points()),
                           ),
                         );
                       },

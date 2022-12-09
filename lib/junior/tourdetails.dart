@@ -1,8 +1,10 @@
 import 'package:capstone/tour_model.dart';
-import 'package:capstone/junior/confirmregpage.dart';
 import 'package:capstone/senior/location_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../api_manager.dart';
+import '../senior/navigation_bar.dart';
 
 class TourDetails extends StatefulWidget {
   final TourModel tour;
@@ -15,6 +17,7 @@ class _TourDetailsState extends State<TourDetails> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final date = widget.tour.created?.split("T");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -67,14 +70,15 @@ class _TourDetailsState extends State<TourDetails> {
                         Column(
                           children: [
                             Text('${widget.tour.authorName}'),
-                            Text('${widget.tour.followers} followers'),
+                            //Text('${widget.tour.followers} followers'),
+                            Text('0 followers'),
                           ],
                         ),
                         SizedBox(
                           width: 150,
                         ),
                         Row(
-                          children: [Text('rating'), Text(" 점")],
+                          children: [Text('0'), Text(" 점")],
                         )
                       ],
                     ),
@@ -102,7 +106,7 @@ class _TourDetailsState extends State<TourDetails> {
           )),
           SliverToBoxAdapter(
               child: Text(
-            'theme :- ${widget.tour.title}',
+            'Theme: ${widget.tour.title}',
             textAlign: TextAlign.center,
             style:
                 TextStyle(height: 2, fontSize: 20, fontWeight: FontWeight.bold),
@@ -118,12 +122,12 @@ class _TourDetailsState extends State<TourDetails> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  'uploaded date',
+                  'Created date : ${date?.first}',
                   textAlign: TextAlign.center,
                   style: TextStyle(height: 2, fontSize: 15),
                 ),
                 Text(
-                  '${widget.tour.date}',
+                  'Date and Time : ${widget.tour.date}',
                   textAlign: TextAlign.center,
                   style: TextStyle(height: 2, fontSize: 15),
                 ),
@@ -161,14 +165,21 @@ class _TourDetailsState extends State<TourDetails> {
                       height: 10,
                     ),
                     Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    'https://geology.com/world/world-map.gif'),
-                                fit: BoxFit.cover)),
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width * .8,
                         height: 300,
+                        child: GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                              target: LatLng(widget.tour.latitude!,
+                                  widget.tour.longitude!),
+                              zoom: 10),
+                          markers: {
+                            Marker(
+                                markerId: const MarkerId('start'),
+                                position: LatLng(widget.tour.latitude!,
+                                    widget.tour.longitude!))
+                          },
+                        ),
                       ),
                     ),
                     Center(
@@ -185,48 +196,80 @@ class _TourDetailsState extends State<TourDetails> {
           // start place (map showing the lat and long of the place)
         ],
       ),
-      bottomNavigationBar: LocationController.get.userId == null
-          ? null
-          : Container(
-              height: 56,
-              margin: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    width: 66,
-                    color: Colors.white,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Icon(Icons.favorite, color: Colors.red),
-                      ],
-                    ),
-                  ),
-                  Text("1/${widget.tour.participants} Participants",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      color: Colors.blueAccent,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ConfirmRegPage(),
-                            ),
-                          );
-                        },
-                        child: Text("신청하기",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18)),
+      bottomNavigationBar: FutureBuilder<bool?>(
+        builder: ((context, snapshot) {
+          final isSenior = snapshot.data == true;
+          final isHideNavBar =
+              LocationController.get.userId == null || isSenior;
+          return isHideNavBar
+              ? Container(
+                  height: 0,
+                  width: 0,
+                )
+              : Container(
+                  height: 56,
+                  margin: EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: 66,
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Icon(Icons.favorite, color: Colors.red),
+                          ],
+                        ),
                       ),
-                    ),
+                      Text("1/${widget.tour.participants} Participants",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18)),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.center,
+                          color: Colors.blueAccent,
+                          child: GestureDetector(
+                            onTap: () {
+                              ApiManager.updateApplicationTour().then((value) {
+                                showSnackbar(
+                                    context, "Participant added successfully!");
+                                /*Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ConfirmRegPage(),
+                                  ),
+                                );*/
+                              });
+                            },
+                            child: Text("신청하기",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18)),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                );
+        }),
+        future: ApiManager.isSenior(),
+      ),
     );
+  }
+
+  void showSnackbar(BuildContext context, String msg, {Function? action}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(msg),
+        action: SnackBarAction(
+          label: "Done",
+          onPressed: (() {
+            if (action != null) {
+              action.call();
+            } else {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (setting) => NavBar()),
+                  (route) => false);
+            }
+          }),
+        )));
   }
 }

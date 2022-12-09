@@ -3,6 +3,7 @@ import 'package:capstone/senior/location_controller.dart';
 import 'package:capstone/senior/makethemepage.dart';
 import 'package:capstone/senior/maketourpage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -18,6 +19,58 @@ class ThemeDetails extends StatefulWidget {
 }
 
 class _ThemeDetailsState extends State<ThemeDetails> {
+  bool ispreimun = false;
+
+  @override
+  void initState() {
+    ispreimun = widget.themeModel.premium;
+    if (ispreimun == true)
+      SchedulerBinding.instance
+          .addPostFrameCallback((_) => showDialoge(context));
+    super.initState();
+  }
+
+  void showDialoge(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("This theme is premium"),
+        content: const Text("To open it 100 points will be deducted"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(ctx).pop();
+            },
+            child: Container(
+              color: Colors.grey,
+              padding: const EdgeInsets.all(14),
+              child: const Text("cancel",
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: Container(
+              color: Colors.grey,
+              padding: const EdgeInsets.all(14),
+              child: const Text("confirm",
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeModel model = widget.themeModel;

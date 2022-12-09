@@ -1,4 +1,3 @@
-import 'package:capstone/chatpage.dart';
 import 'package:capstone/junior/tourpage.dart';
 import 'package:capstone/senior/tourgoingon.dart';
 import 'package:flutter/material.dart';
