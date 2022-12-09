@@ -12,6 +12,9 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'theme_model.dart';
+
+import 'tour_model.dart';
 import 'tourApplication_model.dart';
 import 'tour_model.dart';
 

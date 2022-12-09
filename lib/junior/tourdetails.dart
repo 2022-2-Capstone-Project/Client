@@ -182,11 +182,6 @@ class _TourDetailsState extends State<TourDetails> {
                         ),
                       ),
                     ),
-                    Center(
-                        child: Text(
-                      'google Map',
-                      style: TextStyle(fontSize: 20, height: 3),
-                    )),
                   ],
                 ),
               ),
